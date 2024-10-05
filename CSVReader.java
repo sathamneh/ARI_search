@@ -102,7 +102,7 @@ public class CSVReader {
             bw.write("Index,Result\n"); // write header
             for (File file : files) {
                 if (file.getName().endsWith(".CSV")) {
-                    System.out.println("Processing file: " + file.getName());
+                    // System.out.println("Processing file: " + file.getName());
                     readCSV(file.getAbsolutePath());
                     if (hasColumn(file.getAbsolutePath(), columnName, columnIndex)) {
                         // System.out.println("Column found!");
