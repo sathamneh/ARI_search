@@ -8,4 +8,4 @@ Comparisonvalue2 An interesting and informative visual jaunt of several thousand
 `OutputColumnIndex 2
 Index,Result
 /home/admsher/anagram_matcher/ARI_search/Test/NYT_00192016.CSV
-https://www.nytimes.com/1929/01/22/archives/the-screen-abyssinia-c-sea-fighting.html,Matched with 776 score with intersecton of 0.6790945406125166 and 0.6781914893617021. Verdict is true
+https://www.nytimes.com/1929/01/22/archives/the-screen-abyssinia-c-sea-fighting.html,Matched with 1236 score with intersecton of 0.8921438082556591 and 0.8921438082556591. Verdict is true
