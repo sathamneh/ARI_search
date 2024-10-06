@@ -3,17 +3,16 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.ar-experts.ari_search</groupId>
+  <groupId>com.arexperts</groupId>
   <artifactId>ARI_search</artifactId>
   <version>1.0-SNAPSHOT</version>
 
   <name>ARI_search</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <url>http://www.ar-experts.com</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.release>17</maven.compiler.release>
+    <maven.compiler.release>11</maven.compiler.release>
   </properties>
 
   <dependencyManagement>
@@ -66,6 +65,13 @@
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <version>3.4.2</version>
+          <configuration>
+            <archive>
+                <manifest>
+                    <mainClass>Main</mainClass>
+                </manifest>
+            </archive>
+        </configuration>          
         </plugin>
         <plugin>
           <artifactId>maven-install-plugin</artifactId>
