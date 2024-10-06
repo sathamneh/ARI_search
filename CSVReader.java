@@ -39,10 +39,11 @@ public class CSVReader {
 
   
 
-    public static void compareAnagram(String filePath, String columnName, int columnIndex, String comparisonValue, BufferedWriter bw,int columnurl,int outputcolumnindex,String urlvalue) throws IOException {
+    public static void comparengram(String filePath, String columnName, int columnIndex, String comparisonValue, BufferedWriter bw,int columnurl,int outputcolumnindex,String urlvalue) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line = br.readLine(); // read the header row
-            
+
+            // System.out.println(filePath);
             bw.write(filePath+ "\n");
             String[] headers = line.split(",");
             if (columnIndex >= headers.length) {
@@ -53,7 +54,7 @@ public class CSVReader {
                 return;
             }
             // System.out.println("here");
-            isAnagram anagram = new isAnagram();
+            ArticleIndex article = new ArticleIndex(10,true);
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
                 if (values.length <= columnIndex) {
@@ -64,22 +65,24 @@ public class CSVReader {
                 String column = values[columnIndex].trim();
                 // System.out.println(column);
 
-                String result = anagram.isAnagram(column, comparisonValue);
-                // System.out.println(urlvalue);;
+                String result = article.validateMatch(column, comparisonValue);
+                // System.out.println(result);
                 if (urlvalue.contains("None")){
                 // System.out.println(result.contains(urlvalue));
-                if (anagram.verdict==true && result.contains("true")) {
+                if ( result.contains("true")) {
                 // System.out.println(result);
                 if(outputcolumnindex!=0) bw.write(values[outputcolumnindex].trim() + "," + result + "\n");
-                else bw.write("0" + "," + result + "\n");    
+                else bw.write("0" + "," + result + "\n");
+                bw.flush();    
                     }
                 }else{
                     // System.out.println(result.contains("true"));
                     // System.out.println(result);
                     if (values[columnurl].trim().contains(urlvalue) && result.contains("true")) {
-                    // System.out.println(result);
+                    System.out.println(result);
                     if(outputcolumnindex!=0) bw.write(values[outputcolumnindex].trim() + "," + result + "\n");
                     else bw.write("0" + "," + result + "\n");    
+                    bw.flush();
                     }
 
                 }
@@ -100,13 +103,14 @@ public class CSVReader {
         }
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("result/intersection.csv"))) {
             bw.write("Index,Result\n"); // write header
+            bw.flush();
             for (File file : files) {
                 if (file.getName().endsWith(".CSV")) {
                     // System.out.println("Processing file: " + file.getName());
                     readCSV(file.getAbsolutePath());
                     if (hasColumn(file.getAbsolutePath(), columnName, columnIndex)) {
                         // System.out.println("Column found!");
-                        compareAnagram(file.getAbsolutePath(), column, index, value, bw,columnIndex,op,comparisonValue);
+                        comparengram(file.getAbsolutePath(), column, index, value, bw,columnIndex,op,comparisonValue);
                     } else {
                         // System.out.println("Column not found!");
                     }
