@@ -43,7 +43,6 @@ public class CSVReader {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line = br.readLine(); // read the header row
 
-
             // System.out.println(filePath);
             bw.write(filePath+ "\n");
             bw.flush();
@@ -104,6 +103,7 @@ public class CSVReader {
             return;
         }
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("result/intersection.csv"))) {
+            bw.write("Directory "+directoryPath + "InputColumn1 "+columnName  + "InputColumn1Index "+columnIndex + "Comparisonvalue1 "+ comparisonValue + "InputColumn2 "+column+"InputColumn2Index " +index +"Comparisonvalue2 "+ value+ "`OutputColumnIndex "+op+"\n");
             bw.write("Index,Result\n"); // write header
             bw.flush();
             for (File file : files) {
