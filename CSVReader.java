@@ -67,7 +67,7 @@ public class CSVReader {
                 String column = values[columnIndex].trim();
                 // System.out.println(column);
 
-                String result = article.validateMatch(column, comparisonValue);
+                String result = article.validateMatch( comparisonValue,column);
                 // System.out.println(result);
                 if (urlvalue.contains("None")){
                 // System.out.println(result.contains(urlvalue));
