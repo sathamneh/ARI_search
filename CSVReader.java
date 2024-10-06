@@ -103,7 +103,7 @@ public class CSVReader {
             return;
         }
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("result/intersection.csv"))) {
-            bw.write("Directory "+directoryPath + "InputColumn1 "+columnName  + "InputColumn1Index "+columnIndex + "Comparisonvalue1 "+ comparisonValue + "InputColumn2 "+column+"InputColumn2Index " +index +"Comparisonvalue2 "+ value+ "`OutputColumnIndex "+op+"\n");
+            bw.write("Directory "+directoryPath+ "\n" + "InputColumn1 "+columnName  +"\n"+ "InputColumn1Index "+columnIndex + "\n"+"Comparisonvalue1 "+ comparisonValue +"\n"+ "InputColumn2 "+column+"\n"+"InputColumn2Index " +index +"\n"+"Comparisonvalue2 "+ value+"\n"+ "`OutputColumnIndex "+op+"\n");
             bw.write("Index,Result\n"); // write header
             bw.flush();
             for (File file : files) {
