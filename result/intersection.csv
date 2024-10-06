@@ -1,11 +1,10 @@
-Directory /home/admsher/Vol 8 Stories 1
+Directory Test
 InputColumn1 url
 InputColumn1Index 2
 Comparisonvalue1 nytimes
 InputColumn2 text
 InputColumn2Index 6
-Comparisonvalue2 P. S. YOUR NOT LISTENING. By Eleanor Craig. 215 pages. Illustrated. Richard W. Baron. $5.95.CHILDREN OF VIETNAM. By Betty Jean Lifton and Thomas C. Fox. 111 pages. Illustrated with photographs by Thomas C. Fox. Atheneum. $4.95.The children. Is it that their mere presence on a page is enough to make a book resonate with feeling? Or has your reviewer now entered that doting stage.
+Comparisonvalue2 An interesting and informative visual jaunt of several thousand miles, into places like Sumatra, Ceylon, Arabia, the Andaman Islands and Abyssinia, can be taken at the Fifth Avenue Playhouse by witnessing a picture called The Lost Empire. This series of scenes is prefaced by a short talk by Captain Edward
 `OutputColumnIndex 2
 Index,Result
-/home/admsher/Vol 8 Stories 1/NYT_00192543.CSV
-https://www.nytimes.com/1972/12/01/archives/its-the-children-that-get-you.html,Matched with 72 score with intersecton of 0.9666666666666667 and 0.9666666666666667. Verdict is true
+/home/admsher/anagram_matcher/ARI_search/Test/NYT_00192016.CSV

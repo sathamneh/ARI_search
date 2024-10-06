@@ -57,14 +57,25 @@ public class CSVReader {
             // System.out.println("here");
             ArticleIndex article = new ArticleIndex(10,true);
             while ((line = br.readLine()) != null) {
+
                 String[] values = line.split(",");
                 if (values.length <= columnIndex) {
+
                     continue;
                 }
-                
-                
+                  
                 String column = values[columnIndex].trim();
-                // System.out.println(column);
+                if (values.length>6){
+                    for (int i = 7; i < values.length; i++) {
+                        column=column+" "+values[i].trim();
+                        
+                    }
+
+
+
+                }
+              
+                System.out.println(column);
 
                 String result = article.validateMatch( comparisonValue,column);
                 // System.out.println(result);
