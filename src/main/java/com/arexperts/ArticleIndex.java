@@ -75,7 +75,7 @@ public class ArticleIndex {
     }
 
     private String hash(String s) {
-        // Try this instead https://stackoverflow.com/a/2624210/12570
+        // Try this instead https://stackoverflow.com/a/2624385/12570
         md.reset();
         md.update(s.getBytes());
         return new String(md.digest());
