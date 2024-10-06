@@ -1,3 +1,5 @@
 *.class
 manifest.txt
+article_index.py
+target/*
 
