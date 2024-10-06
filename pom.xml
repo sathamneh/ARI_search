@@ -68,7 +68,7 @@
           <configuration>
             <archive>
                 <manifest>
-                    <mainClass>Main</mainClass>
+                    <mainClass>com.arexperts.Main</mainClass>
                 </manifest>
             </archive>
         </configuration>          

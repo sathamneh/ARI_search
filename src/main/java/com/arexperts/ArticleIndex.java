@@ -10,12 +10,20 @@ public class ArticleIndex {
     private boolean hashKeys;
     private Map<String, List<String>> ngramTable;
     private Map<String, String> keyTable;
+    private MessageDigest md;
 
     public ArticleIndex(int n, boolean hashKeys) {
         this.n = n;
         this.hashKeys = hashKeys;
         this.ngramTable = new HashMap<>();
         this.keyTable = new HashMap<>();
+        try {
+            this.md = MessageDigest.getInstance("SHA-256");
+        } catch(NoSuchAlgorithmException ex)
+        {
+
+        }
+
     }
 
     public void addArticle(String s, String key) {
@@ -67,17 +75,10 @@ public class ArticleIndex {
     }
 
     private String hash(String s) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = md.digest(s.getBytes(StandardCharsets.UTF_8));
-            StringBuilder sb = new StringBuilder();
-            for (byte b : hashBytes) {
-                sb.append(String.format("%02x", b));
-            }
-            return sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+        // Try this instead https://stackoverflow.com/a/2624210/12570
+        md.reset();
+        md.update(s.getBytes());
+        return new String(md.digest());
     }
 
     public  String validateMatch(String s1, String s2) {
