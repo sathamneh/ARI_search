@@ -66,7 +66,7 @@ public class CSVReader {
                   
                 String column = values[columnIndex].trim();
                 if (values.length>6){
-                    for (int i = 7; i < values.length; i++) {
+                    for (int i = 7; i < values.length-1; i++) {
                         column=column+" "+values[i].trim();
                         
                     }
@@ -75,7 +75,7 @@ public class CSVReader {
 
                 }
               
-                System.out.println(column);
+                // System.out.println(column);
 
                 String result = article.validateMatch( comparisonValue,column);
                 // System.out.println(result);
@@ -89,7 +89,7 @@ public class CSVReader {
                     }
                 }else{
                     // System.out.println(result.contains("true"));
-                    // System.out.println(result);
+                    System.out.println(result);
                     if (values[columnurl].trim().contains(urlvalue) && result.contains("true")) {
                     System.out.println(result);
                     if(outputcolumnindex!=0) bw.write(values[outputcolumnindex].trim() + "," + result + "\n");
