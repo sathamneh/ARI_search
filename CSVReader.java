@@ -43,8 +43,10 @@ public class CSVReader {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line = br.readLine(); // read the header row
 
+
             // System.out.println(filePath);
             bw.write(filePath+ "\n");
+            bw.flush();
             String[] headers = line.split(",");
             if (columnIndex >= headers.length) {
                 return;

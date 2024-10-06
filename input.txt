@@ -4,5 +4,5 @@ InputColumnindex1:2
 Comparisonvalue1:nytimes
 InputColumnName2:text
 InputColumnIndex2:6
-Comparisonvalue2:P. S. YOUR NOT LISTENING. By Eleanor Craig. 215 pages. Illustrated. Richard W. Baron. $5.95.CHILDREN OF VIETNAM. By Betty Jean Lifton and Thomas C. Fox. 111 pages. Illustrated with photographs by Thomas C. Fox. Atheneum. $4.95.The children. Is it that their mere presence on a page is enough to make a book resonate with feeling? Or has your reviewer now entered that doting stage
+Comparisonvalue2:P. S. YOUR NOT LISTENING. By Eleanor Craig. 215 pages. Illustrated. Richard W. Baron. $5.95.CHILDREN OF VIETNAM. By Betty Jean Lifton and Thomas C. Fox. 111 pages. Illustrated with photographs by Thomas C. Fox. Atheneum. $4.95.The children. Is it that their mere presence on a page is enough to make a book resonate with feeling? Or has your reviewer now entered that doting stage.
 OutputColumnIndex:0
