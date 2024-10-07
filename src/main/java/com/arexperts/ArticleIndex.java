@@ -3,7 +3,6 @@ package com.arexperts;
 import java.util.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.nio.charset.StandardCharsets;
 
 public class ArticleIndex {
     private int n;
@@ -57,7 +56,7 @@ public class ArticleIndex {
         return new String[]{keyTable.get(maxKey), String.valueOf(totals.get(maxKey))};
     }
 
-    private Set<String> getNGrams(String s, int n) {
+    public Set<String> getNGrams(String s, int n) {
         String[] words = s.split("\\s+");
         Set<String> grams = new HashSet<>();
         for (int i = 0; i <= words.length - n; i++) {
