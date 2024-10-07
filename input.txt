@@ -1,4 +1,4 @@
-Folderpath:Test
+Folderpath:/mnt/d/projects/ARI/OpenAI-NYT/CSV
 InputColumnname1:url
 InputColumnindex1:2
 Comparisonvalue1:nytimes
