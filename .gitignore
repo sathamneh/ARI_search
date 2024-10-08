@@ -4,5 +4,6 @@ article_index.py
 target/*
 ARI_search-1.0-SNAPSHOT.jar
 dependency-reduced-pom.xml
-result/intersection.csv
+.vscode/
+ps*
 .vscode/

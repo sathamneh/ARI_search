@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CSVReader {
-    private static final int DEFAULT_THREAD_COUNT = 16; // Default number of threads
 
     public static boolean hasColumn(String filePath, String columnName, int columnIndex) {
         try (Reader reader = new FileReader(filePath);
@@ -35,8 +34,9 @@ public class CSVReader {
         try (Reader reader = new FileReader(filePath);
                 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 
+            String fileName = new File(filePath).getName();
             synchronized (bw) {
-                bw.write(filePath + "\n");
+                bw.write(fileName + "\n");
                 bw.flush();
             }
 
@@ -53,10 +53,10 @@ public class CSVReader {
                     if (urlvalue.contains("None")) {
                         if (result.contains("true")) {
                             if (outputcolumnindex != 0) {
-                                bw.write(record.get(outputcolumnindex).trim() + "," + result + "\n");
+                                bw.write(fileName + "," + record.get(outputcolumnindex).trim() + "," + result + "\n");
                             }
                             else {
-                                bw.write("0" + "," + result + "\n");
+                                bw.write(fileName + ",0," + result + "\n");
                             }
                             bw.flush();
                         }
@@ -64,10 +64,10 @@ public class CSVReader {
                     else {
                         if (record.get(columnurl).trim().contains(urlvalue) && result.contains("true")) {
                             if (outputcolumnindex != 0) {
-                                bw.write(record.get(outputcolumnindex).trim() + "," + result + "\n");
+                                bw.write(fileName + "," + record.get(outputcolumnindex).trim() + "," + result + "\n");
                             }
                             else {
-                                bw.write("0" + "," + result + "\n");
+                                bw.write(fileName + ",0," + result + "\n");
                             }
                             bw.flush();
                         }
