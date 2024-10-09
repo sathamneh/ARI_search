@@ -19,7 +19,7 @@ public class CSVReader {
 
     public static boolean hasColumn(String filePath, String columnName, int columnIndex) {
         try (Reader reader = new FileReader(filePath);
-                CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
+                CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build())) {
             return csvParser.getHeaderMap().containsKey(columnName);
         }
         catch (IOException e) {
@@ -32,7 +32,7 @@ public class CSVReader {
             BufferedWriter bw, int columnurl, int outputcolumnindex, String urlvalue, AtomicInteger totalRecords)
             throws IOException {
         try (Reader reader = new FileReader(filePath);
-                CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
+                CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build())) {
 
             String fileName = new File(filePath).getName();
             synchronized (bw) {
