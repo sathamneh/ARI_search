@@ -112,7 +112,7 @@ public class CSVReader {
             bw.flush();
 
             for (File file : files) {
-                if (file.getName().toLowerCase().endsWith(".csv")) {
+                if (file.getName().toLowerCase().endsWith(".csv") && !file.getName().toLowerCase().startsWith("._")) {
                     final BufferedWriter finalBw = bw;
                     executor.submit(() -> {
                         if (hasColumn(file.getAbsolutePath(), columnName, columnIndex)) {
