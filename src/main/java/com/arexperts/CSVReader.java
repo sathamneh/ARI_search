@@ -78,8 +78,7 @@ public class CSVReader {
     }
 
     public static ArticleIndex loadFiles(String directoryPath,  int columnIndex) {
-
-        int loadedFileCount = 0;
+        int fileCount = 0;
         File[] files = getFileList(directoryPath);
         ArticleIndex article = new ArticleIndex(10, true);
 
@@ -100,11 +99,13 @@ public class CSVReader {
                 catch(IOException ex) {
                     System.err.println("File '" + file.getName() +  "' caught exception: " + ex.getLocalizedMessage());
                 }
+                catch(OutOfMemoryError exMemoryError)
+                {
+                    System.err.println("File '" + file.getName() +  "' caught exception: " + exMemoryError.getLocalizedMessage() + " after " + fileCount + " files.");
+                }
             }
-            loadedFileCount++;
-            if (loadedFileCount > 10) {
-                break;
-            }
+            fileCount++;
+            System.out.println("Done " + fileCount + " files. Currently processing " + file.getName());
         }
 
         return article;
