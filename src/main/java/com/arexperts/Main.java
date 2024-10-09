@@ -99,8 +99,16 @@ public class Main {
             System.out.println("Process started with the following parameters:");
             System.out.println("Directory path: " + directoryPath);
             System.out.println("Thread count: " + threadCount);
-            CSVReader.processFiles(directoryPath, columnNameUrl, columnIndexUrl, comparisonValueUrl, columnNameByte,
-                    columnIndexByte, str1, outputColumn, threadCount);
+            // CSVReader.processFiles(directoryPath, columnNameUrl, columnIndexUrl, comparisonValueUrl, columnNameByte,
+            //         columnIndexByte, str1, outputColumn, threadCount);
+
+            ArticleIndex articles = CSVReader.loadFiles(directoryPath, columnIndexByte);
+
+            String[] matches = articles.findMatch(str1);
+
+            for (String matched : matches) {
+                System.out.println(matched);
+            }
         }
         catch (IOException e) {
             System.err.println("Error reading input file: " + e.getMessage());

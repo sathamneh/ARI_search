@@ -77,23 +77,67 @@ public class CSVReader {
         }
     }
 
-    public static void processFiles(String directoryPath, String columnName, int columnIndex, String comparisonValue,
-            String column, int index, String value, int op, int threadCount) {
+    public static ArticleIndex loadFiles(String directoryPath,  int columnIndex) {
+
+        int loadedFileCount = 0;
+        File[] files = getFileList(directoryPath);
+        ArticleIndex article = new ArticleIndex(10, true);
+
+        for (File file : files) {
+            if (file.getName().toLowerCase().endsWith(".csv") && !file.getName().toLowerCase().startsWith("._")) {
+                try (Reader reader = new FileReader(file.getAbsolutePath());
+                CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build())) {
+
+                    for (CSVRecord record : csvParser) {
+                        if (record.size() <= columnIndex) {
+                            continue;
+                        }
+        
+                        String articleToAdd = record.get(columnIndex).trim();        
+                        article.addArticle(articleToAdd, file.getName().toLowerCase());
+                    } 
+                }
+                catch(IOException ex) {
+                    System.err.println("File '" + file.getName() +  "' caught exception: " + ex.getLocalizedMessage());
+                }
+            }
+            loadedFileCount++;
+            if (loadedFileCount > 10) {
+                break;
+            }
+        }
+
+        return article;
+    }
+
+    private static File[] getFileList(String directoryPath)
+    {
         File directory = new File(directoryPath);
         if (!directory.exists()){
-            System.out.println("Given path '" + directoryPath + "' does not exist.");
-            return;
+            System.err.println("Given path '" + directoryPath + "' does not exist.");
+            return null;
         }
         if (!directory.isDirectory()) {
-            System.out.println("Given path '" + directoryPath + "' is not a directory.");
-            return;
+            System.err.println("Given path '" + directoryPath + "' is not a directory.");
+            return null;
         }
         File[] files = directory.listFiles();
         if (files == null) {
-            System.out.println("No files found in directory");
-            return;
+            System.err.println("No files found in directory");
+            return null;
         }
 
+        return files;
+    }
+    
+    public static void processFiles(String directoryPath, String columnName, int columnIndex, String comparisonValue,
+            String column, int index, String value, int op, int threadCount) {
+
+        File[] files = getFileList(directoryPath);
+        if (files == null) {
+            System.err.println("Invalid file list.");
+            return;
+        }
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         BufferedWriter bw = null;
         AtomicInteger processedFileCount = new AtomicInteger(0);
