@@ -80,8 +80,12 @@ public class CSVReader {
     public static void processFiles(String directoryPath, String columnName, int columnIndex, String comparisonValue,
             String column, int index, String value, int op, int threadCount) {
         File directory = new File(directoryPath);
-        if (!directory.exists() || !directory.isDirectory()) {
-            System.out.println("Invalid directory path");
+        if (!directory.exists()){
+            System.out.println("Given path '" + directoryPath + "' does not exist.");
+            return;
+        }
+        if (!directory.isDirectory()) {
+            System.out.println("Given path '" + directoryPath + "' is not a directory.");
             return;
         }
         File[] files = directory.listFiles();
