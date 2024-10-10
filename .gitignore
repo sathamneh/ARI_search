@@ -8,3 +8,4 @@ dependency-reduced-pom.xml
 ps*
 .vscode/
 result/intersection.csv
+article_index.ser

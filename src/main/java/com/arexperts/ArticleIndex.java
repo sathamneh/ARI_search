@@ -2,8 +2,15 @@ package com.arexperts;
 
 import java.util.*;
 import java.nio.charset.StandardCharsets;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.io.File;
+import java.io.Serializable;
 
-public class ArticleIndex {
+public class ArticleIndex implements Serializable {
+    public static String SAVE_NAME = "article_index.ser";
     private int n;
     private boolean hashKeys;
     private Map<String, List<Integer>> ngramTable;
@@ -15,6 +22,54 @@ public class ArticleIndex {
         this.ngramTable = new HashMap<>();
         this.keyTable = new HashMap<>();
     }
+
+    private void writeObject(Object object, String name)
+    {
+        try {
+            FileOutputStream fos = new FileOutputStream(name);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(object);
+            oos.close();
+        }
+        catch (Exception ex) {
+            System.err.println("Unable to serialize " + name + ": " + ex.getLocalizedMessage());
+        }
+    }
+
+    public static boolean isSaved()
+    {
+        File f = new File(SAVE_NAME);
+        return f.exists() && !f.isDirectory(); 
+    }
+
+    public void save()
+    {
+        writeObject(this, SAVE_NAME);
+        //writeObject(keyTable, "key_table.ser");
+        //writeObject(keyTable, "key_table.ser");
+    }
+
+    private static Object readObject(String name)
+    {
+        Object theReadObject = null;
+        try {
+            FileInputStream fis = new FileInputStream(name);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            theReadObject =  ois.readObject();
+
+            ois.close();
+        }
+        catch (Exception ex) {
+            System.err.println("Unable to deserialize " + name + ": " + ex.getLocalizedMessage());
+        }
+
+        return theReadObject;
+    }    
+    public static ArticleIndex load()
+    {
+        return (ArticleIndex) readObject(SAVE_NAME);
+    }
+    
 
     public void addArticle(String s, String key) {
         Set<String> grams = getNGrams(s, n);
@@ -54,9 +109,10 @@ public class ArticleIndex {
     }
 
     public Set<String> getNGrams(String s, int n) {
+        final int skip = 50;
         String[] words = s.split("\\s+");
         Set<String> grams = new HashSet<>();
-        for (int i = 0; i <= words.length - n; i++) {
+        for (int i = 0; i <= words.length - n; i += skip) {
             StringBuilder sb = new StringBuilder();
             for (int j = 0; j < n; j++) {
                 sb.append(words[i + j]);

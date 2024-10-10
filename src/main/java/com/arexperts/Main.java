@@ -102,7 +102,16 @@ public class Main {
             // CSVReader.processFiles(directoryPath, columnNameUrl, columnIndexUrl, comparisonValueUrl, columnNameByte,
             //         columnIndexByte, str1, outputColumn, threadCount);
 
-            ArticleIndex articles = CSVReader.loadFiles(directoryPath, columnIndexByte);
+            ArticleIndex articles;
+            if (ArticleIndex.isSaved())
+            {
+                articles = ArticleIndex.load();
+            }
+            else
+            {
+                articles = CSVReader.loadFiles(directoryPath, columnIndexByte);
+                articles.save();
+            }
 
             String[] matches = articles.findMatch(str1);
 
