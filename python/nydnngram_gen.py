@@ -148,7 +148,7 @@ if __name__ == '__main__':
     #df = [read_data(file) for file in csvfiles]
     for file in csvfiles:
         ddf = dd.read_csv(file,  blocksize="128MB", dtype=nydndtypes)
-        ddfint = ddf.drop(columns=['Title', 'URL', 'Copyright Owner', 'Copyright Registration'], axis=1)
+        ddfint = ddf.drop(columns=['Title', 'URL', 'Copyright Owner', 'Copyright Registration', 'Author(s)'], axis=1)
         #ddfsmall = ddfint.compute()
         print(ddfint.head(10))
         print("files read")
