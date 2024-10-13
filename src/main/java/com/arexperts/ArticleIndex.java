@@ -12,7 +12,8 @@ public class ArticleIndex implements Serializable {
     public static String SAVE_NAME = "article_index.ser";    
     private int n;
     private Map<Integer, List<Integer>> ngramTable;
-    private Map<Integer, String> keyTable;    
+    private Map<Integer, String> keyTable;
+    private int articlesAdded = 0;
 
     public ArticleIndex(int n) {
         this.n = n;
@@ -65,8 +66,12 @@ public class ArticleIndex implements Serializable {
         return (ArticleIndex) readObject(SAVE_NAME);
     }
     
+    public int NumberOfArticles() {
+        return articlesAdded;
+    }
 
     public void addArticle(String s, String key) {
+        articlesAdded++;
         Set<Integer> grams = getNGrams(s, n);
         int h = key.hashCode();
         keyTable.put(h, key);
@@ -75,7 +80,7 @@ public class ArticleIndex implements Serializable {
         }
     }
 
-    public String[] findMatch(String s) {
+    public String[] findMatch(String s) {        
         Set<Integer> grams = getNGrams(s, n);
         List<Integer> hits = new ArrayList<>();
         List<Double> scores = new ArrayList<>();

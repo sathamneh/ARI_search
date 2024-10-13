@@ -152,6 +152,8 @@ public class Main {
                 System.out.println("Time when new data is saved: " + getElapsedTime() + "s");
             }
 
+            System.out.println("Using " + articles.NumberOfArticles() + " articles for match.");
+
             String[] matches = articles.findMatch(str1);
 
             for (String matched : matches) {
