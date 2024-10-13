@@ -13,23 +13,25 @@ public class CSVReader {
 
     public static ArticleIndex loadFiles(String directoryPath,  int columnIndex, int filesToProcess, int offsetFileNumber, int nGramLength, int maximumNumberOfNGrams) {
         int fileCount = 0;
+        int filesProcessed = 0;
         File[] files = getFileList(directoryPath);
         ArticleIndex article = new ArticleIndex(nGramLength, maximumNumberOfNGrams);
         double startTime = System.nanoTime()/1_000_000_000.0;
 
         for (File file : files) {
+            fileCount++;
             double loopStartTime = System.nanoTime()/1_000_000_000.0;
             if (file.getName().toLowerCase().startsWith("._")) {
-                System.out.println("Skipping ._:" + (System.nanoTime()/1_000_000_000.0 - startTime));        
+                System.out.println("Skipping ._ file:" + file.getName());        
                 continue;
             }
             if (fileCount < offsetFileNumber) {
-                System.out.println("Skipping offset:" + (System.nanoTime()/1_000_000_000.0 - startTime));        
+                System.out.println("Skipping offset file:" + file.getName() );        
                 continue;
             }
-            if (fileCount >= filesToProcess)
+            if (filesProcessed >= filesToProcess)
             {
-                System.out.println("Skipping number of files done:" + (System.nanoTime()/1_000_000_000.0 - startTime));        
+                System.out.println("All processed files done! " + (System.nanoTime()/1_000_000_000.0 - startTime));        
                 break;
             }
             if (file.getName().toLowerCase().endsWith(".csv")) {
@@ -51,12 +53,12 @@ public class CSVReader {
                 {
                     System.err.println("File '" + file.getName() +  "' caught exception: " + exMemoryError.getLocalizedMessage() + " after " + fileCount + " files.");
                 }
-                fileCount++;
+                filesProcessed++;
             } else {
                 System.out.println("Skipping : " + file.getName() + " " + (System.nanoTime()/1_000_000_000.0 - startTime));        
             }
             
-            System.out.println("File #" + fileCount + ". Processed " + file.getName() + " in " +   (System.nanoTime()/1_000_000_000.0 - loopStartTime));        
+            System.out.println("File #" + filesProcessed + ". Processed " + file.getName() + " in " +   (System.nanoTime()/1_000_000_000.0 - loopStartTime));        
         }
 
         System.out.println("End:" + (System.nanoTime()/1_000_000_000.0 - startTime));        

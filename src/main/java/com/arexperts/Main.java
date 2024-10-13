@@ -112,31 +112,15 @@ public class Main {
             System.out.println("nGram length      : " + nGramLength);
             System.out.println("Max # ngrams      : " + maximumNumberOfNGrams);
 
-            ArticleIndex articles;
-            if (ArticleIndex.isSaved())
-            {
-                System.out.println("Loading data from " + ArticleIndex.SAVE_NAME);
-                articles = ArticleIndex.load();
-                System.out.println("Time to load saved data: " + getElapsedTime() + "s");
-            }
-            else
-            {
-                System.out.println(ArticleIndex.SAVE_NAME + " does not exist. Processing files.");
-                articles = CSVReader.loadFiles(directoryPath, columnIndexByte, filesToProcess, offsetFileNumber, nGramLength, maximumNumberOfNGrams);
-                System.out.println("File processing finished. Saving to disk.");
-                System.out.println("Time to load new data: " + getElapsedTime() + "s");
-                articles.save();
-                System.out.println("Saving finished.");
-                System.out.println("Time when new data is saved: " + getElapsedTime() + "s");
-            }
+            ArticleIndex articles = CSVReader.loadFiles(directoryPath, columnIndexByte, filesToProcess, offsetFileNumber, nGramLength, maximumNumberOfNGrams);
+            System.out.println("Time to load data from files : " + getElapsedTime() + "s");
 
             System.out.println("Using " + articles.NumberOfArticles() + " articles for match.");
 
             String[] matches = articles.findMatch(str1);
 
-            for (String matched : matches) {
-                System.out.println(matched);
-            }
+            System.out.println("File " + matches[0] + " matched best with " + Double.parseDouble(matches[1])/maximumNumberOfNGrams );
+
         }
         catch (IOException e) {
             System.err.println("Error reading input file: " + e.getMessage());
