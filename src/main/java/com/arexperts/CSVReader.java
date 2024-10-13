@@ -18,7 +18,7 @@ public class CSVReader {
         double startTime = System.nanoTime()/1_000_000_000.0;
 
         for (File file : files) {
-            System.out.println("Start loop:" + (System.nanoTime()/1_000_000_000.0 - startTime));        
+            double loopStartTime = System.nanoTime()/1_000_000_000.0;
             if (file.getName().toLowerCase().startsWith("._")) {
                 System.out.println("Skipping ._:" + (System.nanoTime()/1_000_000_000.0 - startTime));        
                 continue;
@@ -56,8 +56,7 @@ public class CSVReader {
                 System.out.println("Skipping : " + file.getName() + " " + (System.nanoTime()/1_000_000_000.0 - startTime));        
             }
             
-            System.out.println("Done " + fileCount + " files. Currently processing " + file.getName());
-            System.out.println("End loop:" + (System.nanoTime()/1_000_000_000.0 - startTime));        
+            System.out.println("File #" + fileCount + ". Processed " + file.getName() + " in " +   (System.nanoTime()/1_000_000_000.0 - loopStartTime));        
         }
 
         System.out.println("End:" + (System.nanoTime()/1_000_000_000.0 - startTime));        
