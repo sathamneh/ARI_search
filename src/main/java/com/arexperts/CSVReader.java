@@ -11,10 +11,10 @@ import java.io.Reader;
 
 public class CSVReader {
 
-    public static ArticleIndex loadFiles(String directoryPath,  int columnIndex, int filesToProcess, int offsetFileNumber, int nGramLength) {
+    public static ArticleIndex loadFiles(String directoryPath,  int columnIndex, int filesToProcess, int offsetFileNumber, int nGramLength, int maximumNumberOfNGrams) {
         int fileCount = 0;
         File[] files = getFileList(directoryPath);
-        ArticleIndex article = new ArticleIndex(nGramLength, 100);
+        ArticleIndex article = new ArticleIndex(nGramLength, maximumNumberOfNGrams);
         double startTime = System.nanoTime()/1_000_000_000.0;
 
         System.out.println(startTime);      
@@ -53,8 +53,11 @@ public class CSVReader {
                 {
                     System.err.println("File '" + file.getName() +  "' caught exception: " + exMemoryError.getLocalizedMessage() + " after " + fileCount + " files.");
                 }
+                fileCount++;
+            } else {
+                System.out.println("Skipping : " + file.getName() + " " + (System.nanoTime()/1_000_000_000.0 - startTime));        
             }
-            fileCount++;
+            
             System.out.println("Done " + fileCount + " files. Currently processing " + file.getName());
             System.out.println("End loop:" + (System.nanoTime()/1_000_000_000.0 - startTime));        
         }

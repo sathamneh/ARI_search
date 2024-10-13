@@ -114,7 +114,7 @@ public class Main {
             else
             {
                 System.out.println(ArticleIndex.SAVE_NAME + " does not exist. Processing files.");
-                articles = CSVReader.loadFiles(directoryPath, columnIndexByte, filesToProcess, offsetFileNumber, 5);
+                articles = CSVReader.loadFiles(directoryPath, columnIndexByte, filesToProcess, offsetFileNumber, 5, 10000);
                 System.out.println("File processing finished. Saving to disk.");
                 System.out.println("Time to load new data: " + getElapsedTime() + "s");
                 articles.save();

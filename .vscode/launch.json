@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "TestLimitingNGramNumber",
+            "request": "launch",
+            "mainClass": "com.arexperts.TestLimitingNGramNumber",
+            "projectName": "ARI_search"
+        },
+        {
+            "type": "java",
             "name": "TestReadSpeed",
             "request": "launch",
             "mainClass": "com.arexperts.TestReadSpeed",

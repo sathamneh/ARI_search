@@ -10,3 +10,5 @@ ps*
 result/intersection.csv
 article_index.ser
 test.csv
+NYT_00192012.CSV
+NYT_00192015.CSV.text
