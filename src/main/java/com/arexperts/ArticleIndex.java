@@ -14,11 +14,13 @@ public class ArticleIndex implements Serializable {
     private Map<Integer, List<Integer>> ngramTable;
     private Map<Integer, String> keyTable;
     private int articlesAdded = 0;
+    private int maximumNumberOfNGrams;
 
-    public ArticleIndex(int n) {
+    public ArticleIndex(int n, int maximumNumberOfNGrams) {
         this.n = n;
         this.ngramTable = new HashMap<>();
         this.keyTable = new HashMap<>();
+        this.maximumNumberOfNGrams = maximumNumberOfNGrams;
     }
 
     private void writeObject(Object object, String name)
@@ -109,14 +111,11 @@ public class ArticleIndex implements Serializable {
     }
 
     public Set<Integer> getNGrams(String s, int n) {
-        return getNGrams(s, n, 1);
-    }
-
-    private Set<Integer> getNGrams(String s, int n, int skip) {
         String s_letters_only = s.replaceAll("[^a-zA-Z0-9\\s+]", "").toLowerCase();
         String[] words = s_letters_only.split("\\s+");
         Set<Integer> grams = new HashSet<>();
-        for (int i = 0; i <= words.length - n; i += skip) {
+        int foundNGrams = 0;
+        for (int i = 0; i <= words.length - n; i++) {
             StringBuilder sb = new StringBuilder();
             for (int j = 0; j < n; j++) {
                 sb.append(words[i + j]);
@@ -126,7 +125,13 @@ public class ArticleIndex implements Serializable {
             }
             Integer hashCode = sb.toString().hashCode();
             grams.add(hashCode);
+            foundNGrams++;
+            if (foundNGrams >= maximumNumberOfNGrams) {
+                break;
+            }
         }
+
+        System.out.println("Found " + foundNGrams + " ngrams.");
         return grams;
     }
 

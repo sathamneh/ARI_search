@@ -16,7 +16,7 @@ public class TestReadSpeed {
     private static void doRead() {
         int row = 0;        
         File file = new File("test.csv");
-        ArticleIndex articles = new ArticleIndex(5);
+        ArticleIndex articles = new ArticleIndex(5, 100);
         try (Reader reader = new FileReader(file.getAbsolutePath());
         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build())) {
 

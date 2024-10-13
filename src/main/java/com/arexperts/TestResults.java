@@ -11,7 +11,7 @@ public class TestResults
     
     public static void main(String[] args) 
     {
-        ArticleIndex test_index = new ArticleIndex(5);
+        ArticleIndex test_index = new ArticleIndex(5,100);
         test_index.addArticle(s1,"s1");
         test_index.addArticle(s3,"s3");
             

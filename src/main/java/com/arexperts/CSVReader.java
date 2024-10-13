@@ -14,7 +14,7 @@ public class CSVReader {
     public static ArticleIndex loadFiles(String directoryPath,  int columnIndex, int filesToProcess, int offsetFileNumber, int nGramLength) {
         int fileCount = 0;
         File[] files = getFileList(directoryPath);
-        ArticleIndex article = new ArticleIndex(nGramLength);
+        ArticleIndex article = new ArticleIndex(nGramLength, 100);
         double startTime = System.nanoTime()/1_000_000_000.0;
 
         System.out.println(startTime);      
