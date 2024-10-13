@@ -40,7 +40,7 @@ public class CSVReader {
                 bw.flush();
             }
 
-            ArticleIndex article = new ArticleIndex(10, true);
+            ArticleIndex article = new ArticleIndex(10);
             for (CSVRecord record : csvParser) {
                 totalRecords.incrementAndGet();
                 if (record.size() <= columnIndex) {

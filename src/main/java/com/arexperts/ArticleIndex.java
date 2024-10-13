@@ -1,17 +1,14 @@
 package com.arexperts;
 
 import java.util.*;
-import java.nio.charset.StandardCharsets;
 
 public class ArticleIndex {
     private int n;
-    private boolean hashKeys;
     private Map<String, List<Integer>> ngramTable;
     private Map<Integer, String> keyTable;
 
-    public ArticleIndex(int n, boolean hashKeys) {
+    public ArticleIndex(int n) {
         this.n = n;
-        this.hashKeys = hashKeys;
         this.ngramTable = new HashMap<>();
         this.keyTable = new HashMap<>();
     }
