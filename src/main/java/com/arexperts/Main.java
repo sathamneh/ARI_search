@@ -21,6 +21,7 @@ public class Main {
             int filesToProcess = 1154;
             int offsetFileNumber = 0;
             int nGramLength = 5;
+            int maximumNumberOfNGrams = 100000;
 
             // Define parameter prefixes
             Set<String> parameterPrefixes = new HashSet<>(Arrays.asList("Folderpath:", "InputColumnname1:",
@@ -94,6 +95,14 @@ public class Main {
                         System.err.println("Invalid number format for ngram_length");
                     }
                 }
+                else if (line.startsWith("maximum_number_of_ngrams:")) {
+                    try {
+                        maximumNumberOfNGrams = Integer.parseInt(line.substring(24).trim().replaceAll(":", ""));
+                    }
+                    catch (NumberFormatException e) {
+                        System.err.println("Invalid number format for maximum_number_of_ngrams");
+                    }
+                }
             }
             System.out.println("Process started with the following parameters:");
             System.out.println("Directory path    : " + directoryPath);
@@ -101,8 +110,7 @@ public class Main {
             System.out.println("Files to process  : " + filesToProcess);
             System.out.println("Offset file number: " + offsetFileNumber);
             System.out.println("nGram length      : " + nGramLength);
-            // CSVReader.processFiles(directoryPath, columnNameUrl, columnIndexUrl, comparisonValueUrl, columnNameByte,
-            //         columnIndexByte, str1, outputColumn, threadCount);
+            System.out.println("Max # ngrams      : " + maximumNumberOfNGrams);
 
             ArticleIndex articles;
             if (ArticleIndex.isSaved())
@@ -114,7 +122,7 @@ public class Main {
             else
             {
                 System.out.println(ArticleIndex.SAVE_NAME + " does not exist. Processing files.");
-                articles = CSVReader.loadFiles(directoryPath, columnIndexByte, filesToProcess, offsetFileNumber, 5, 10000);
+                articles = CSVReader.loadFiles(directoryPath, columnIndexByte, filesToProcess, offsetFileNumber, nGramLength, maximumNumberOfNGrams);
                 System.out.println("File processing finished. Saving to disk.");
                 System.out.println("Time to load new data: " + getElapsedTime() + "s");
                 articles.save();

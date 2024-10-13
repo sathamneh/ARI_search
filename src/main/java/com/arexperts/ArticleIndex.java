@@ -130,8 +130,6 @@ public class ArticleIndex implements Serializable {
                 break;
             }
         }
-
-        System.out.println("Found " + foundNGrams + " ngrams.");
         return grams;
     }
 

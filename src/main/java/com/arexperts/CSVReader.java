@@ -17,8 +17,6 @@ public class CSVReader {
         ArticleIndex article = new ArticleIndex(nGramLength, maximumNumberOfNGrams);
         double startTime = System.nanoTime()/1_000_000_000.0;
 
-        System.out.println(startTime);      
-
         for (File file : files) {
             System.out.println("Start loop:" + (System.nanoTime()/1_000_000_000.0 - startTime));        
             if (file.getName().toLowerCase().startsWith("._")) {
