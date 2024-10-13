@@ -8,8 +8,10 @@ import java.io.IOException;
 import java.util.*;
 
 public class Main {
+
+    public final static long startTime = System.nanoTime();
     public static void main(String[] args) {
-        long startTime = System.nanoTime();
+        
         try (BufferedReader br = new BufferedReader(new FileReader("input.txt"))) {
             // Initialize variables
             String directoryPath = null;
@@ -21,6 +23,9 @@ public class Main {
             String str1 = null;
             int outputColumn = 0;
             int threadCount = 1;
+            int filesToProcess = 1154;
+            int offsetFileNumber = 0;
+            int nGramLength = 5;
 
             // Define parameter prefixes
             Set<String> parameterPrefixes = new HashSet<>(Arrays.asList("Folderpath:", "InputColumnname1:",
@@ -95,22 +100,56 @@ public class Main {
                         System.err.println("Invalid number format for threadcount");
                     }
                 }
+                else if (line.startsWith("files_to_process:")) {
+                    try {
+                        filesToProcess = Integer.parseInt(line.substring(16).trim().replaceAll(":", ""));
+                    }
+                    catch (NumberFormatException e) {
+                        System.err.println("Invalid number format for files_to_process");
+                    }
+                }
+                else if (line.startsWith("offset_file_number:")) {
+                    try {
+                        offsetFileNumber = Integer.parseInt(line.substring(18).trim().replaceAll(":", ""));
+                    }
+                    catch (NumberFormatException e) {
+                        System.err.println("Invalid number format for offset_file_number");
+                    }
+                }
+                else if (line.startsWith("ngram_length:")) {
+                    try {
+                        nGramLength = Integer.parseInt(line.substring(12).trim().replaceAll(":", ""));
+                    }
+                    catch (NumberFormatException e) {
+                        System.err.println("Invalid number format for ngram_length");
+                    }
+                }
             }
             System.out.println("Process started with the following parameters:");
-            System.out.println("Directory path: " + directoryPath);
-            System.out.println("Thread count: " + threadCount);
+            System.out.println("Directory path    : " + directoryPath);
+            System.out.println("Thread count      : " + threadCount);
+            System.out.println("Files to process  : " + filesToProcess);
+            System.out.println("Offset file number: " + offsetFileNumber);
+            System.out.println("nGram length      : " + nGramLength);
             // CSVReader.processFiles(directoryPath, columnNameUrl, columnIndexUrl, comparisonValueUrl, columnNameByte,
             //         columnIndexByte, str1, outputColumn, threadCount);
 
             ArticleIndex articles;
             if (ArticleIndex.isSaved())
             {
+                System.out.println("Loading data from " + ArticleIndex.SAVE_NAME);
                 articles = ArticleIndex.load();
+                System.out.println("Time to load saved data: " + getElapsedTime() + "s");
             }
             else
             {
-                articles = CSVReader.loadFiles(directoryPath, columnIndexByte);
+                System.out.println(ArticleIndex.SAVE_NAME + " does not exist. Processing files.");
+                articles = CSVReader.loadFiles(directoryPath, columnIndexByte, filesToProcess, offsetFileNumber, 5);
+                System.out.println("File processing finished. Saving to disk.");
+                System.out.println("Time to load new data: " + getElapsedTime() + "s");
                 articles.save();
+                System.out.println("Saving finished.");
+                System.out.println("Time when new data is saved: " + getElapsedTime() + "s");
             }
 
             String[] matches = articles.findMatch(str1);
@@ -123,9 +162,7 @@ public class Main {
             System.err.println("Error reading input file: " + e.getMessage());
         }
 
-        long endTime = System.nanoTime();
-        double executionTime = (endTime - startTime) / 1_000_000_000.0; // Converts to seconds
-        System.out.println("Execution time: " + executionTime + "s");
+        System.out.println("Total execution time: " + getElapsedTime() + "s");
     }
 
     // Helper method to check if a line is a parameter line
@@ -136,5 +173,10 @@ public class Main {
             }
         }
         return false;
+    }
+
+    private static double getElapsedTime()
+    {        
+        return (System.nanoTime() - startTime) / 1_000_000_000.0; // Converts to seconds
     }
 }

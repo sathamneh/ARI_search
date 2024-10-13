@@ -40,7 +40,7 @@ public class CSVReader {
                 bw.flush();
             }
 
-            ArticleIndex article = new ArticleIndex(10, true);
+            ArticleIndex article = new ArticleIndex(10);
             for (CSVRecord record : csvParser) {
                 totalRecords.incrementAndGet();
                 if (record.size() <= columnIndex) {
@@ -77,13 +77,19 @@ public class CSVReader {
         }
     }
 
-    public static ArticleIndex loadFiles(String directoryPath,  int columnIndex) {
+    public static ArticleIndex loadFiles(String directoryPath,  int columnIndex, int filesToProcess, int offsetFileNumber, int nGramLength) {
         int fileCount = 0;
         File[] files = getFileList(directoryPath);
-        ArticleIndex article = new ArticleIndex(10, true);
+        ArticleIndex article = new ArticleIndex(nGramLength);
 
         for (File file : files) {
-            if (file.getName().toLowerCase().endsWith(".csv") && !file.getName().toLowerCase().startsWith("._")) {
+            if (file.getName().toLowerCase().startsWith("._")) {
+                continue;
+            }
+            if (fileCount < offsetFileNumber) {
+                continue;
+            }
+            if (file.getName().toLowerCase().endsWith(".csv")) {
                 try (Reader reader = new FileReader(file.getAbsolutePath());
                 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build())) {
 
@@ -105,6 +111,10 @@ public class CSVReader {
                 }
             }
             fileCount++;
+            if (fileCount > filesToProcess)
+            {
+                break;
+            }
             System.out.println("Done " + fileCount + " files. Currently processing " + file.getName());
         }
 

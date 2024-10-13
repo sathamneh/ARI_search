@@ -1,7 +1,6 @@
 package com.arexperts;
 
 import java.util.*;
-import java.nio.charset.StandardCharsets;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.FileInputStream;
@@ -10,15 +9,13 @@ import java.io.File;
 import java.io.Serializable;
 
 public class ArticleIndex implements Serializable {
-    public static String SAVE_NAME = "article_index.ser";
+    public static String SAVE_NAME = "article_index.ser";    
     private int n;
-    private boolean hashKeys;
-    private Map<String, List<Integer>> ngramTable;
-    private Map<Integer, String> keyTable;
+    private Map<Integer, List<Integer>> ngramTable;
+    private Map<Integer, String> keyTable;    
 
-    public ArticleIndex(int n, boolean hashKeys) {
+    public ArticleIndex(int n) {
         this.n = n;
-        this.hashKeys = hashKeys;
         this.ngramTable = new HashMap<>();
         this.keyTable = new HashMap<>();
     }
@@ -45,8 +42,6 @@ public class ArticleIndex implements Serializable {
     public void save()
     {
         writeObject(this, SAVE_NAME);
-        //writeObject(keyTable, "key_table.ser");
-        //writeObject(keyTable, "key_table.ser");
     }
 
     private static Object readObject(String name)
@@ -72,19 +67,19 @@ public class ArticleIndex implements Serializable {
     
 
     public void addArticle(String s, String key) {
-        Set<String> grams = getNGrams(s, n);
+        Set<Integer> grams = getNGrams(s, n);
         int h = key.hashCode();
         keyTable.put(h, key);
-        for (String g : grams) {
+        for (Integer g : grams) {
             ngramTable.computeIfAbsent(g, k -> new ArrayList<>()).add(h);
         }
     }
 
     public String[] findMatch(String s) {
-        Set<String> grams = getNGrams(s, n);
+        Set<Integer> grams = getNGrams(s, n);
         List<Integer> hits = new ArrayList<>();
         List<Double> scores = new ArrayList<>();
-        for (String g : grams) {
+        for (Integer g : grams) {
             List<Integer> found = ngramTable.get(g);
             if (found != null && !found.isEmpty()) {
                 hits.addAll(found);
@@ -108,10 +103,14 @@ public class ArticleIndex implements Serializable {
         return new String[] { keyTable.get(maxKey), String.valueOf(maxValue) };
     }
 
-    public Set<String> getNGrams(String s, int n) {
-        final int skip = 50;
-        String[] words = s.split("\\s+");
-        Set<String> grams = new HashSet<>();
+    public Set<Integer> getNGrams(String s, int n) {
+        return getNGrams(s, n, 1);
+    }
+
+    private Set<Integer> getNGrams(String s, int n, int skip) {
+        String s_letters_only = s.replaceAll("[^a-zA-Z0-9\\s+]", "").toLowerCase();
+        String[] words = s_letters_only.split("\\s+");
+        Set<Integer> grams = new HashSet<>();
         for (int i = 0; i <= words.length - n; i += skip) {
             StringBuilder sb = new StringBuilder();
             for (int j = 0; j < n; j++) {
@@ -120,20 +119,21 @@ public class ArticleIndex implements Serializable {
                     sb.append(" ");
                 }
             }
-            grams.add(sb.toString());
+            Integer hashCode = sb.toString().hashCode();
+            grams.add(hashCode);
         }
         return grams;
     }
 
     public String validateMatch(String s1, String s2) {
-        Set<String> ng1 = getNGrams(s1, 5);
-        Set<String> ng2 = getNGrams(s2, 5);
-        Set<String> intersection = new HashSet<>(ng1);
+        Set<Integer> ng1 = getNGrams(s1, 5);
+        Set<Integer> ng2 = getNGrams(s2, 5);
+        Set<Integer> intersection = new HashSet<>(ng1);
         intersection.retainAll(ng2);
         int inter = intersection.size();
         double score1 = (double) inter / ng1.size();
         double score2 = (double) inter / ng2.size();
-        boolean isMatch = Math.max(score1, score2) > 0.2 && Math.min(score1, score2) > 0.1;
+        boolean isMatch = Math.max(score1, score2) > 0.5 && Math.min(score1, score2) > 0.2;
         return "Matched with " + inter + " score with intersection of " + score1 + " and " + score2 + ". Verdict is "
                 + isMatch;
     }
