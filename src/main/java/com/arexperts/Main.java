@@ -15,13 +15,8 @@ public class Main {
         try (BufferedReader br = new BufferedReader(new FileReader("input.txt"))) {
             // Initialize variables
             String directoryPath = null;
-            String columnNameUrl = null;
-            int columnIndexUrl = 0;
-            String comparisonValueUrl = null;
-            String columnNameByte = null;
             int columnIndexByte = 0;
             String str1 = null;
-            int outputColumn = 0;
             int threadCount = 1;
             int filesToProcess = 1154;
             int offsetFileNumber = 0;
@@ -39,23 +34,6 @@ public class Main {
                 line = line.trim();
                 if (line.startsWith("Folderpath:")) {
                     directoryPath = line.substring(11).trim().replaceAll("\"", "").replaceAll(":", "");
-                }
-                else if (line.startsWith("InputColumnname1:")) {
-                    columnNameUrl = line.substring(17).trim().replaceAll("\"", "").replaceAll(":", "");
-                }
-                else if (line.startsWith("InputColumnindex1:")) {
-                    try {
-                        columnIndexUrl = Integer.parseInt(line.substring(17).trim().replaceAll(":", ""));
-                    }
-                    catch (NumberFormatException e) {
-                        System.err.println("Invalid number format for InputColumnindex1");
-                    }
-                }
-                else if (line.startsWith("Comparisonvalue1:")) {
-                    comparisonValueUrl = line.substring(16).trim().replaceAll("\"", "").replaceAll(":", "");
-                }
-                else if (line.startsWith("InputColumnName2:")) {
-                    columnNameByte = line.substring(17).trim().replaceAll("\"", "").replaceAll(":", "");
                 }
                 else if (line.startsWith("InputColumnIndex2:")) {
                     try {
@@ -83,14 +61,6 @@ public class Main {
                     }
                     str1 = sb.toString();
                     // If nextLine is a parameter line, it will be processed in the next iteration
-                }
-                else if (line.startsWith("OutputColumnIndex:")) {
-                    try {
-                        outputColumn = Integer.parseInt(line.substring(17).trim().replaceAll(":", ""));
-                    }
-                    catch (NumberFormatException e) {
-                        System.err.println("Invalid number format for OutputColumnIndex");
-                    }
                 }
                 else if (line.startsWith("threadcount:")) {
                     try {

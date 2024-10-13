@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "TestReadSpeed",
+            "request": "launch",
+            "mainClass": "com.arexperts.TestReadSpeed",
+            "projectName": "ARI_search"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"

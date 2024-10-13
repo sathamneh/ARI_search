@@ -1,4 +1,4 @@
-Folderpath:/Volumes/AEO PRIVATE/OpenAI/Machina_NYT - Vol 8 Stories
+Folderpath:/Users/kootsoop/Downloads/Machina_NYT - Vol 8 Stories
 InputColumnname1:url
 InputColumnindex1:2
 Comparisonvalue1:nytimes

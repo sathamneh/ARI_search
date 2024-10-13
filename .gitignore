@@ -9,3 +9,4 @@ ps*
 .vscode/
 result/intersection.csv
 article_index.ser
+test.csv
