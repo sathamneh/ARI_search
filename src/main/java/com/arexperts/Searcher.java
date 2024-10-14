@@ -119,7 +119,7 @@ public class Searcher {
             if (!newFilesNotFoundAlreadyReported.get())
             {
                 System.out.println(Thread.currentThread().getName() + " : No new files found.");
-                System.out.println("Time since start: " + (System.nanoTime() / 1_000_000_000.0 - startTime));
+                System.out.println("Time since search start: " + (System.nanoTime() / 1_000_000_000.0 - startTime));
             }
             newFilesNotFoundAlreadyReported.set(true);
         }

@@ -84,7 +84,7 @@ public class Main {
             }
             System.out.println("Process started with the following parameters:");
             System.out.println("Directory path    : " + directoryPath);
-            System.err.println("Folder to scan    : " + watchDirectory);
+            System.out.println("Folder to scan    : " + watchDirectory);
             System.out.println("Thread count      : " + threadCount);
             System.out.println("Files to process  : " + filesToProcess);
             System.out.println("Offset file number: " + offsetFileNumber);
