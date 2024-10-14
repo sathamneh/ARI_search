@@ -143,6 +143,13 @@ public class Searcher {
                 System.err.println("Problem writing result for " + fileToSearch + " : "  + ex.getLocalizedMessage());                        
             }
         }
+        try 
+        {
+            writer.flush();                
+        }
+        catch (IOException ex) {
+            System.err.println("Problem FLUSHING result for " + fileToSearch + " : "  + ex.getLocalizedMessage());                        
+        }
         Path p = Paths.get(fileToSearch);
         String fileNameOnly = p.getFileName().toString();
         System.out.println(Thread.currentThread().getName() + " : " + fileNameOnly + ": processed " + articles.length + " articles.");
