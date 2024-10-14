@@ -4,9 +4,7 @@ package com.arexperts;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
 
 public class Main {
 
@@ -18,17 +16,11 @@ public class Main {
             String directoryPath = null;
             String watchDirectory = null;
             int columnIndexByte = 0;
-            String str1 = null;
             int threadCount = 1;
             int filesToProcess = 1154;
             int offsetFileNumber = 0;
             int nGramLength = 5;
             int maximumNumberOfNGrams = 100000;
-
-            // Define parameter prefixes
-            Set<String> parameterPrefixes = new HashSet<>(Arrays.asList("Folderpath:", "InputColumnname1:",
-                    "InputColumnindex1:", "Comparisonvalue1:", "InputColumnName2:", "InputColumnIndex2:",
-                    "Comparisonvalue2:", "OutputColumnIndex:", "threadcount:"));
 
             String line;
             String nextLine = null;
@@ -48,25 +40,6 @@ public class Main {
                     catch (NumberFormatException e) {
                         System.err.println("Invalid number format for InputColumnIndex2");
                     }
-                }
-                else if (line.startsWith("Comparisonvalue2:")) {
-                    StringBuilder sb = new StringBuilder();
-                    String value = line.substring(16).trim().replaceAll("\"", "").replaceAll(":", "");
-                    sb.append(value);
-                    while ((nextLine = br.readLine()) != null) {
-                        nextLine = nextLine.trim();
-                        if (isParameterLine(nextLine, parameterPrefixes)) {
-                            // It's a new parameter, process it in the next iteration
-                            break;
-                        }
-                        else {
-                            sb.append(System.lineSeparator());
-                            sb.append(nextLine);
-                            nextLine = null; // Continue reading lines
-                        }
-                    }
-                    str1 = sb.toString();
-                    // If nextLine is a parameter line, it will be processed in the next iteration
                 }
                 else if (line.startsWith("threadcount:")) {
                     try {
@@ -134,16 +107,6 @@ public class Main {
         }
 
         System.out.println("Total execution time: " + getElapsedTime() + "s");
-    }
-
-    // Helper method to check if a line is a parameter line
-    private static boolean isParameterLine(String line, Set<String> parameterPrefixes) {
-        for (String prefix : parameterPrefixes) {
-            if (line.startsWith(prefix)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private static double getElapsedTime()

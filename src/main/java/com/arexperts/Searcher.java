@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -24,6 +26,7 @@ public class Searcher {
     private String watchDirectory;
     private double lastTimeNewFileFoundInSeconds = System.nanoTime() / 1_000_000_000.0;
     private AtomicBoolean newFilesNotFoundAlreadyReported = new AtomicBoolean(false);
+    private double startTime = System.nanoTime() / 1_000_000_000.0;
 
     public Searcher(ArticleIndex index, int threadsToUse, String watchDirectory) {
         this.index = index;
@@ -116,6 +119,7 @@ public class Searcher {
             if (!newFilesNotFoundAlreadyReported.get())
             {
                 System.out.println(Thread.currentThread().getName() + " : No new files found.");
+                System.out.println("Time since start: " + (System.nanoTime() / 1_000_000_000.0 - startTime));
             }
             newFilesNotFoundAlreadyReported.set(true);
         }
@@ -139,7 +143,9 @@ public class Searcher {
                 System.err.println("Problem writing result for " + fileToSearch + " : "  + ex.getLocalizedMessage());                        
             }
         }
-        System.out.println(Thread.currentThread().getName() + " : " + fileToSearch + ": processed " + articles.length + " articles.");
+        Path p = Paths.get(fileToSearch);
+        String fileNameOnly = p.getFileName().toString();
+        System.out.println(Thread.currentThread().getName() + " : " + fileNameOnly + ": processed " + articles.length + " articles.");
     }
 
     private Optional<String> getNextFile() {
