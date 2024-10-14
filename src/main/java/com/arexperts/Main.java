@@ -16,6 +16,7 @@ public class Main {
         try (BufferedReader br = new BufferedReader(new FileReader("input.txt"))) {
             // Initialize variables
             String directoryPath = null;
+            String watchDirectory = null;
             int columnIndexByte = 0;
             String str1 = null;
             int threadCount = 1;
@@ -36,6 +37,9 @@ public class Main {
                 line = line.trim();
                 if (line.startsWith("Folderpath:")) {
                     directoryPath = line.substring(11).trim().replaceAll("\"", "").replaceAll(":", "");
+                }
+                if (line.startsWith("Watchdirectory:")) {
+                    watchDirectory = line.substring(14).trim().replaceAll("\"", "").replaceAll(":", "");
                 }
                 else if (line.startsWith("InputColumnIndex2:")) {
                     try {
@@ -107,6 +111,7 @@ public class Main {
             }
             System.out.println("Process started with the following parameters:");
             System.out.println("Directory path    : " + directoryPath);
+            System.err.println("Folder to scan    : " + watchDirectory);
             System.out.println("Thread count      : " + threadCount);
             System.out.println("Files to process  : " + filesToProcess);
             System.out.println("Offset file number: " + offsetFileNumber);
@@ -119,7 +124,7 @@ public class Main {
             System.out.println("Using " + articles.NumberOfArticles() + " articles for match.");
 
             double startOfSearch = System.nanoTime() / 1_000_000_000.0;
-            Searcher searcher = new Searcher(articles, threadCount, "/Volumes/Macintosh HD - Data/Users/kootsoop/Downloads/SomeNYT");
+            Searcher searcher = new Searcher(articles, threadCount, watchDirectory);
             searcher.search();
             System.out.println("Time taken for threaded search is " + (System.nanoTime() / 1_000_000_000.0 - startOfSearch) + "s for " + searcher.checkedArticles() + " articles.");
 

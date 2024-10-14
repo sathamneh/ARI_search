@@ -1,4 +1,5 @@
 Folderpath:/Users/kootsoop/Downloads/Machina_NYT - Vol 8 Stories
+Watchdirectory:/Volumes/Macintosh HD - Data/Users/kootsoop/Downloads/SomeNYT
 InputColumnname1:url
 InputColumnindex1:2
 Comparisonvalue1:nytimes
