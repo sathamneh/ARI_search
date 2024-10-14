@@ -118,28 +118,11 @@ public class Main {
 
             System.out.println("Using " + articles.NumberOfArticles() + " articles for match.");
 
-            String[] matches = articles.findMatch(str1);
+            double startOfSearch = System.nanoTime() / 1_000_000_000.0;
+            Searcher searcher = new Searcher(articles, threadCount, "/Volumes/Macintosh HD - Data/Users/kootsoop/Downloads/SomeNYT");
+            searcher.search();
+            System.out.println("Time taken for threaded search is " + (System.nanoTime() / 1_000_000_000.0 - startOfSearch) + "s for " + searcher.checkedArticles() + " articles.");
 
-            System.out.println("File " + matches[0] + " matched best with " + Double.parseDouble(matches[1])/maximumNumberOfNGrams );
-
-            String[] articlesToCheck = CSVReader.loadArticles("/Volumes/Macintosh HD - Data/Users/kootsoop/Downloads/Machina_NYT - Vol 8 Stories/NYT_00192705.CSV", columnIndexByte);
-
-            double startOfSearch = System.nanoTime()/1_000_000_000.0;
-            try (FileWriter writer = new FileWriter("results.csv")) {
-
-                for (String oneArticle : articlesToCheck) 
-                {
-                    matches = articles.findMatch(oneArticle);
-                    writer.write(matches[0] + "," + Double.parseDouble(matches[1])/maximumNumberOfNGrams + "\n");                    
-                }         
-
-                writer.flush();
-            }
-            catch (IOException e) {
-                System.err.println("Error reading writing file: " + e.getMessage());
-            }
-                
-            System.out.println("Time taken is " + (System.nanoTime() / 1_000_000_000.0 - startOfSearch) + "s for " + articlesToCheck.length + " articles.");
         }
         catch (IOException e) {
             System.err.println("Error reading input file: " + e.getMessage());

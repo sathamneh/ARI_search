@@ -8,6 +8,6 @@ Comparisonvalue2: For most working parents, no other issue is so fraught with wo
 OutputColumnIndex:2
 threadcount:64
 files_to_process:100
-offset_file_number:5
+offset_file_number:0
 ngram_length:5
 maximum_number_of_ngrams:50

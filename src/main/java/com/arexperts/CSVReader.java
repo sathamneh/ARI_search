@@ -89,7 +89,7 @@ public class CSVReader {
         return article;
     }
 
-    private static File[] getFileList(String directoryPath)
+    public static File[] getFileList(String directoryPath)
     {
         File directory = new File(directoryPath);
         if (!directory.exists()){
