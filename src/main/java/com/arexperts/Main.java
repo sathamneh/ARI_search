@@ -97,7 +97,7 @@ public class Main {
             System.out.println("Using " + articles.NumberOfArticles() + " articles for match.");
 
             double startOfSearch = System.nanoTime() / 1_000_000_000.0;
-            Searcher searcher = new Searcher(articles, threadCount, watchDirectory);
+            Searcher searcher = new Searcher(articles, threadCount, watchDirectory, columnIndexByte);
             searcher.search();
             System.out.println("Time taken for threaded search is " + (System.nanoTime() / 1_000_000_000.0 - startOfSearch) + "s for " + searcher.checkedArticles() + " articles.");
 

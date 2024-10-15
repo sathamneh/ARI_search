@@ -27,11 +27,13 @@ public class Searcher {
     private double lastTimeNewFileFoundInSeconds = System.nanoTime() / 1_000_000_000.0;
     private AtomicBoolean newFilesNotFoundAlreadyReported = new AtomicBoolean(false);
     private double startTime = System.nanoTime() / 1_000_000_000.0;
+    private int columnIndex = 6;
 
-    public Searcher(ArticleIndex index, int threadsToUse, String watchDirectory) {
+    public Searcher(ArticleIndex index, int threadsToUse, String watchDirectory, int columnIndex) {
         this.index = index;
         this.threads = threadsToUse;
         this.watchDirectory = watchDirectory;
+        this.columnIndex = columnIndex;
 
         updateCheckedFilesList();
     }
@@ -130,7 +132,7 @@ public class Searcher {
         String fileToSearch = getNextFile().get();
         checkedFiles.put(fileToSearch, new AtomicInteger(1));
    
-        String[] articles = CSVReader.loadArticles(fileToSearch, 6);
+        String[] articles = CSVReader.loadArticles(fileToSearch, columnIndex);
    
         for (String oneArticle : articles) {
             String[] result = index.findMatch(oneArticle);
