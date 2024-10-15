@@ -18,7 +18,7 @@ public class TestLimitingNGramNumber {
 
         for (int numberOfNGrams = 1; numberOfNGrams <= maximum_number_of_ngrams; numberOfNGrams++)
         {
-            ArticleIndex limitedArticleIndex = CSVReader.loadFiles(".", 6, 2, 0, 10, numberOfNGrams);
+            ArticleIndex limitedArticleIndex = CSVReader.loadNGramsFromCSVFiles(".", 6, 2, 0, 10, numberOfNGrams);
 
             String[] matches = limitedArticleIndex.findMatch(textToLookFor);
     

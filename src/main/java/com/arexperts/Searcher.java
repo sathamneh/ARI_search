@@ -132,7 +132,7 @@ public class Searcher {
         String fileToSearch = getNextFile().get();
         checkedFiles.put(fileToSearch, new AtomicInteger(1));
    
-        String[] articles = CSVReader.loadArticles(fileToSearch, columnIndex);
+        String[] articles = CSVReader.loadArticlesForSearching(fileToSearch, columnIndex);
    
         for (String oneArticle : articles) {
             String[] result = index.findMatch(oneArticle);

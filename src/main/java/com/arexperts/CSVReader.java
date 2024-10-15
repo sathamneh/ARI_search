@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class CSVReader {
 
-    public static String[] loadArticles(String fileName, int columnIndex) {
+    public static String[] loadArticlesForSearching(String fileName, int columnIndex) {
         ArrayList<String> returnedArticles = new ArrayList<String>();
 
         if (fileName.toLowerCase().endsWith(".csv")) {
@@ -34,7 +34,7 @@ public class CSVReader {
         return returnedArticles.toArray(new String[returnedArticles.size()]);
     } 
 
-    public static ArticleIndex loadFiles(String directoryPath,  int columnIndex, int filesToProcess, int offsetFileNumber, int nGramLength, int maximumNumberOfNGrams) {
+    public static ArticleIndex loadNGramsFromCSVFiles(String directoryPath,  int columnIndex, int filesToProcess, int offsetFileNumber, int nGramLength, int maximumNumberOfNGrams) {
         int fileCount = 0;
         int filesProcessed = 0;
         File[] files = getFileList(directoryPath);

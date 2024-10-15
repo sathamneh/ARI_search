@@ -91,7 +91,7 @@ public class Main {
             System.out.println("nGram length      : " + nGramLength);
             System.out.println("Max # ngrams      : " + maximumNumberOfNGrams);
 
-            ArticleIndex articles = CSVReader.loadFiles(directoryPath, columnIndexByte, filesToProcess, offsetFileNumber, nGramLength, maximumNumberOfNGrams);
+            ArticleIndex articles = CSVReader.loadNGramsFromCSVFiles(directoryPath, columnIndexByte, filesToProcess, offsetFileNumber, nGramLength, maximumNumberOfNGrams);
             System.out.println("Time to load data from files : " + getElapsedTime() + "s");
 
             System.out.println("Using " + articles.NumberOfArticles() + " articles for match.");
