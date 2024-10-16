@@ -8,31 +8,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
+
 
 public class CSVReader {
-
-    public static String[] loadArticlesForSearching(String fileName, int columnIndex) {
-        ArrayList<String> returnedArticles = new ArrayList<String>();
-
-        if (fileName.toLowerCase().endsWith(".csv")) {
-            try (Reader reader = new FileReader(fileName);
-            CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build())) {
-
-                for (CSVRecord record : csvParser) {
-                    if (record.size() <= columnIndex) {
-                        continue;
-                    }        
-                    returnedArticles.add(record.get(columnIndex).trim());                            
-                } 
-            }
-            catch(IOException ex) {
-                System.err.println("File '" + fileName +  "' caught exception: " + ex.getLocalizedMessage());
-            }
-        }
-
-        return returnedArticles.toArray(new String[returnedArticles.size()]);
-    } 
 
     public static ArticleIndex loadNGramsFromCSVFiles(String directoryPath,  int columnIndex, int filesToProcess, int offsetFileNumber, int nGramLength, int maximumNumberOfNGrams) {
         int fileCount = 0;

@@ -15,6 +15,10 @@ public class Main {
             // Initialize variables
             String directoryPath = null;
             String watchDirectory = null;
+            String jsonTextField = null;
+            String prefixSeparator = null;
+            String suffixSeparator = null;
+
             int columnIndexByte = 0;
             int threadCount = 1;
             int filesToProcess = 1154;
@@ -29,9 +33,18 @@ public class Main {
                 line = line.trim();
                 if (line.startsWith("Folderpath:")) {
                     directoryPath = line.substring(11).trim().replaceAll("\"", "").replaceAll(":", "");
-                }
-                if (line.startsWith("Watchdirectory:")) {
+                } 
+                else if (line.startsWith("Watchdirectory:")) {
                     watchDirectory = line.substring(14).trim().replaceAll("\"", "").replaceAll(":", "");
+                } 
+                else if (line.startsWith("JSONtextfield:")) {
+                    jsonTextField = line.substring(13).trim().replaceAll("\"", "").replaceAll(":", "");
+                }
+                else if (line.startsWith("Prefixseparator:")) {
+                    prefixSeparator = line.substring(15).trim().replaceAll("\"", "").replaceAll(":", "");
+                }
+                else if (line.startsWith("Suffixseparator:")) {
+                    suffixSeparator = line.substring(15).trim().replaceAll("\"", "").replaceAll(":", "");
                 }
                 else if (line.startsWith("InputColumnIndex2:")) {
                     try {
@@ -97,7 +110,7 @@ public class Main {
             System.out.println("Using " + articles.NumberOfArticles() + " articles for match.");
 
             double startOfSearch = System.nanoTime() / 1_000_000_000.0;
-            Searcher searcher = new Searcher(articles, threadCount, watchDirectory, columnIndexByte);
+            Searcher searcher = new Searcher(articles, threadCount, watchDirectory, columnIndexByte, jsonTextField, prefixSeparator, suffixSeparator);
             searcher.search();
             System.out.println("Time taken for threaded search is " + (System.nanoTime() / 1_000_000_000.0 - startOfSearch) + "s for " + searcher.checkedArticles() + " articles.");
 

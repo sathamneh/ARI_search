@@ -28,12 +28,18 @@ public class Searcher {
     private AtomicBoolean newFilesNotFoundAlreadyReported = new AtomicBoolean(false);
     private double startTime = System.nanoTime() / 1_000_000_000.0;
     private int columnIndex = 6;
+    private String jsonTextField;
+    private String prefixSeparator;
+    private String suffixSeparator;
 
-    public Searcher(ArticleIndex index, int threadsToUse, String watchDirectory, int columnIndex) {
+    public Searcher(ArticleIndex index, int threadsToUse, String watchDirectory, int columnIndex, String jsonTextField, String prefixSeparator, String suffixSeparator) {
         this.index = index;
         this.threads = threadsToUse;
         this.watchDirectory = watchDirectory;
         this.columnIndex = columnIndex;
+        this.jsonTextField = jsonTextField;
+        this.prefixSeparator = prefixSeparator;
+        this.suffixSeparator = suffixSeparator;
 
         updateCheckedFilesList();
     }
@@ -132,7 +138,7 @@ public class Searcher {
         String fileToSearch = getNextFile().get();
         checkedFiles.put(fileToSearch, new AtomicInteger(1));
    
-        String[] articles = CSVReader.loadArticlesForSearching(fileToSearch, columnIndex);
+        String[] articles = ArticleLoader.loadArticlesForSearching(fileToSearch, columnIndex, jsonTextField, prefixSeparator, suffixSeparator);
    
         for (String oneArticle : articles) {
             String[] result = index.findMatch(oneArticle);

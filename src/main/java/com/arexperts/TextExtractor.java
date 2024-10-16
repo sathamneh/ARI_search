@@ -1,11 +1,9 @@
 package com.arexperts;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.GZIPInputStream;
 
 public class TextExtractor {
 
