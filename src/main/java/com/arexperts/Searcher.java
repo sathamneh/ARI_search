@@ -31,8 +31,9 @@ public class Searcher {
     private String jsonTextField;
     private String prefixSeparator;
     private String suffixSeparator;
+    private int scoreThreshold;
 
-    public Searcher(ArticleIndex index, int threadsToUse, String watchDirectory, int columnIndex, String jsonTextField, String prefixSeparator, String suffixSeparator) {
+    public Searcher(ArticleIndex index, int threadsToUse, String watchDirectory, int columnIndex, String jsonTextField, String prefixSeparator, String suffixSeparator, int scoreThreshold) {
         this.index = index;
         this.threads = threadsToUse;
         this.watchDirectory = watchDirectory;
@@ -40,6 +41,7 @@ public class Searcher {
         this.jsonTextField = jsonTextField;
         this.prefixSeparator = prefixSeparator;
         this.suffixSeparator = suffixSeparator;
+        this.scoreThreshold = scoreThreshold;
 
         updateCheckedFilesList();
     }
@@ -144,11 +146,16 @@ public class Searcher {
             String[] result = index.findMatch(oneArticle);
             try 
             {
-                writer.write(fileToSearch + "," + result[0] + "," + result[1] + "\n");
+                if (Double.parseDouble(result[1]) > scoreThreshold) {
+                    writer.write(fileToSearch + "," + result[0] + "," + result[1] + "\n");
+                }
                 articlesSearched.incrementAndGet();
             }
             catch (IOException ex) {
                 System.err.println("Problem writing result for " + fileToSearch + " : "  + ex.getLocalizedMessage());                        
+            }
+            catch (NumberFormatException ex) {
+                System.err.println("Cannot parse integer " + fileToSearch + " : "  + ex.getLocalizedMessage());                        
             }
         }
         try 

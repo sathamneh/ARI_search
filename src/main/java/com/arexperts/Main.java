@@ -25,6 +25,7 @@ public class Main {
             int offsetFileNumber = 0;
             int nGramLength = 5;
             int maximumNumberOfNGrams = 100000;
+            int scoreThreshold = 0; // Output all scores by default.
 
             String line;
             String nextLine = null;
@@ -94,15 +95,28 @@ public class Main {
                         System.err.println("Invalid number format for maximum_number_of_ngrams");
                     }
                 }
+                else if (line.startsWith("score_threshold:")) {
+                    try {
+                        scoreThreshold = Integer.parseInt(line.substring(15).trim().replaceAll(":", ""));
+                    }
+                    catch (NumberFormatException e) {
+                        System.err.println("Invalid number format for maximum_number_of_ngrams");
+                    }
+                }
             }
             System.out.println("Process started with the following parameters:");
-            System.out.println("Directory path    : " + directoryPath);
-            System.out.println("Folder to scan    : " + watchDirectory);
-            System.out.println("Thread count      : " + threadCount);
-            System.out.println("Files to process  : " + filesToProcess);
-            System.out.println("Offset file number: " + offsetFileNumber);
-            System.out.println("nGram length      : " + nGramLength);
-            System.out.println("Max # ngrams      : " + maximumNumberOfNGrams);
+            System.out.println("Ingestion directory              : " + directoryPath);
+            System.out.println("# files to ingest                : " + filesToProcess);
+            System.out.println("# files to skip before ingestion : " + offsetFileNumber);
+            System.out.println("nGram length                     : " + nGramLength);
+            System.out.println("Max # ngrams                     : " + maximumNumberOfNGrams);
+            System.out.println("Score threshold                  : " + scoreThreshold);            
+            System.out.println("Folder to scan                   : " + watchDirectory);
+            System.out.println("CSV column to search             : " + columnIndexByte);
+            System.out.println("JSON field to use                : " + jsonTextField);
+            System.out.println("TXT prefix                       : " + prefixSeparator);
+            System.out.println("TXT suffix                       : " + suffixSeparator);
+            
 
             ArticleIndex articles = CSVReader.loadNGramsFromCSVFiles(directoryPath, columnIndexByte, filesToProcess, offsetFileNumber, nGramLength, maximumNumberOfNGrams);
             System.out.println("Time to load data from files : " + getElapsedTime() + "s");
@@ -110,7 +124,7 @@ public class Main {
             System.out.println("Using " + articles.NumberOfArticles() + " articles for match.");
 
             double startOfSearch = System.nanoTime() / 1_000_000_000.0;
-            Searcher searcher = new Searcher(articles, threadCount, watchDirectory, columnIndexByte, jsonTextField, prefixSeparator, suffixSeparator);
+            Searcher searcher = new Searcher(articles, threadCount, watchDirectory, columnIndexByte, jsonTextField, prefixSeparator, suffixSeparator, scoreThreshold);
             searcher.search();
             System.out.println("Time taken for threaded search is " + (System.nanoTime() / 1_000_000_000.0 - startOfSearch) + "s for " + searcher.checkedArticles() + " articles.");
 
