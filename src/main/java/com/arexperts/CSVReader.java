@@ -8,16 +8,20 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 
 public class CSVReader {
-
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     public static ArticleIndex loadNGramsFromCSVFiles(String directoryPath,  int columnIndex, int filesToProcess, int offsetFileNumber, int nGramLength, int maximumNumberOfNGrams) {
         int fileCount = 0;
         int filesProcessed = 0;
         File[] files = getFileList(directoryPath);
         ArticleIndex article = new ArticleIndex(nGramLength, maximumNumberOfNGrams);
         double startTime = System.nanoTime()/1_000_000_000.0;
+
 
         for (File file : files) {
             fileCount++;
@@ -43,8 +47,15 @@ public class CSVReader {
                         if (record.size() <= columnIndex) {
                             continue;
                         }        
-                        String articleToAdd = record.get(columnIndex).trim();        
-                        article.addArticle(articleToAdd, file.getName().toLowerCase());
+                        String articleToAdd = record.get(columnIndex).trim();   
+                        ObjectNode myJson = objectMapper.createObjectNode();
+                        myJson.put("text", articleToAdd);
+                        myJson.put("score", "score");
+                        myJson.put("url", "url");
+                        myJson.put("filename", file.getName().toLowerCase());
+                        myJson.put("text_size", "length");
+                        //returnedArticles.add(myJson);     
+                        article.addArticle(myJson);
                     } 
                 }
                 catch(IOException ex) {

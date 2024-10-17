@@ -15,6 +15,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+
 public class Searcher {
 
     public static int TIMEOUT_PERIOD_IN_SECONDS = 120; // Make this lower if you want to benchmark search speed.
@@ -140,14 +145,18 @@ public class Searcher {
         String fileToSearch = getNextFile().get();
         checkedFiles.put(fileToSearch, new AtomicInteger(1));
    
-        String[] articles = ArticleLoader.loadArticlesForSearching(fileToSearch, columnIndex, jsonTextField, prefixSeparator, suffixSeparator);
-   
-        for (String oneArticle : articles) {
-            String[] result = index.findMatch(oneArticle);
+        ObjectNode[] articles = ArticleLoader.loadArticlesForSearching(fileToSearch, columnIndex, jsonTextField, prefixSeparator, suffixSeparator);
+        //System.out.println("Articles: " + String.join("|", articles));
+        for (ObjectNode oneArticle : articles) {
+            //System.out.println("Article: " + oneArticle);
+            ObjectNode result = index.findMatch(oneArticle);
             try 
             {
-                if (Double.parseDouble(result[1]) > scoreThreshold) {
-                    writer.write(fileToSearch + "," + result[0] + "," + result[1] + "\n");
+                if (true) { //Double.parseDouble(result[1]) > scoreThreshold) {
+                    //JSONObject resultJson = new JSONObject(result[0]);
+                    //JSONObject resultJson = new JSONObject(result[0]);
+                    ObjectNode resultJson = result;
+                    writer.write(fileToSearch + "," + resultJson.get("score").asText() + "," + resultJson.get("url").asText() + "," + resultJson.get("filename").asText() + "," + resultJson.get("file_size").asText() + "\n");
                 }
                 articlesSearched.incrementAndGet();
             }

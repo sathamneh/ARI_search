@@ -7,14 +7,18 @@ import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.io.File;
 import java.io.Serializable;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class ArticleIndex implements Serializable {
     public static String SAVE_NAME = "article_index.ser";    
     private int n;
     private Map<Integer, List<Integer>> ngramTable;
-    private Map<Integer, String> keyTable;
+    private Map<Integer, ObjectNode> keyTable;
     private int articlesAdded = 0;
     private int maximumNumberOfNGrams;
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public ArticleIndex(int n, int maximumNumberOfNGrams) {
         this.n = n;
@@ -72,18 +76,19 @@ public class ArticleIndex implements Serializable {
         return articlesAdded;
     }
 
-    public void addArticle(String s, String key) {
+    public void addArticle(ObjectNode obj) {
         articlesAdded++;
-        Set<Integer> grams = getNGrams(s, n);
-        int h = key.hashCode();
-        keyTable.put(h, key);
+        Set<Integer> grams = getNGrams(obj.get("text").asText() , n);
+        int h = obj.hashCode();
+        keyTable.put(h, obj);
         for (Integer g : grams) {
             ngramTable.computeIfAbsent(g, k -> new ArrayList<>()).add(h);
         }
     }
 
-    public String[] findMatch(String s) {        
-        Set<Integer> grams = getNGrams(s, n);
+    public ObjectNode findMatch(ObjectNode obj) {    
+        //System.out.println("Matching string: " + s);    
+        Set<Integer> grams = getNGrams(obj.get("text").asText(), n);
         List<Integer> hits = new ArrayList<>();
         List<Double> scores = new ArrayList<>();
         for (Integer g : grams) {
@@ -97,17 +102,21 @@ public class ArticleIndex implements Serializable {
             }
         }
         if (hits.isEmpty()) {
-            return new String[] { null, "0" };
+            //System.out.println("Result hit not found ");
+            return null; //new String[] { null, "0" };
         }
         Map<Integer, Double> totals = new HashMap<>();
         for (int i = 0; i < hits.size(); i++) {
             int hit = hits.get(i);
             double score = scores.get(i);
             totals.put(hit, totals.getOrDefault(hit, 0.0) + score);
+            //System.out.println("Score is: " + score);
         }
         int maxKey = Collections.max(totals.entrySet(), Comparator.comparingDouble(Map.Entry::getValue)).getKey();
         double maxValue = totals.get(maxKey);
-        return new String[] { keyTable.get(maxKey), String.valueOf(maxValue) };
+        
+        //return new String[] { keyTable.get(maxKey), String.valueOf(maxValue) };
+        return keyTable.get(maxKey);
     }
 
     public Set<Integer> getNGrams(String s, int n) {
