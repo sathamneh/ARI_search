@@ -107,11 +107,11 @@ public class ArticleIndex implements Serializable {
         }
         int maxKey = Collections.max(totals.entrySet(), Comparator.comparingDouble(Map.Entry::getValue)).getKey();
         double maxValue = totals.get(maxKey);
-        return new String[] { keyTable.get(maxKey), String.valueOf(maxValue) };
+        return new String[] { keyTable.get(maxKey), String.valueOf(maxValue)};
     }
 
     public Set<Integer> getNGrams(String s, int n) {
-        String s_letters_only = s.replaceAll("[^a-zA-Z0-9\\s+]", "").toLowerCase();
+        String s_letters_only = s.replaceAll("[^a-zA-Z0-9\\s++]", "").toLowerCase();
         String[] words = s_letters_only.split("\\s+");
         Set<Integer> grams = new HashSet<>();
         int foundNGrams = 0;

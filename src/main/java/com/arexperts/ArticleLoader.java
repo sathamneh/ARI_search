@@ -62,7 +62,8 @@ public class ArticleLoader {
             String readString;
             while ((readString = in.readLine()) != null){
                 JsonNode jsonNode = objectMapper.readTree(readString);
-                returnedArticles.add(jsonNode.get(jsonTextField).asText());
+                String savedText = jsonNode.get(jsonTextField).asText() + "#" + jsonNode.get("url").asText();
+                returnedArticles.add(savedText);
             }
         } catch (IOException e) {
             System.err.println("Error processing file " + fileName + ": " + e.getMessage());
