@@ -87,7 +87,7 @@ public class ArticleIndex implements Serializable {
     }
 
     public ObjectNode findMatch(ObjectNode obj) {    
-        //System.out.println("Matching string: " + s);    
+        System.out.println("Matching string: " + obj.get("text").asText());    
         Set<Integer> grams = getNGrams(obj.get("text").asText(), n);
         List<Integer> hits = new ArrayList<>();
         List<Double> scores = new ArrayList<>();

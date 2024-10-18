@@ -37,6 +37,7 @@ public class Searcher {
     private String prefixSeparator;
     private String suffixSeparator;
     private int scoreThreshold;
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public Searcher(ArticleIndex index, int threadsToUse, String watchDirectory, int columnIndex, String jsonTextField, String prefixSeparator, String suffixSeparator, int scoreThreshold) {
         this.index = index;
@@ -148,7 +149,7 @@ public class Searcher {
         ObjectNode[] articles = ArticleLoader.loadArticlesForSearching(fileToSearch, columnIndex, jsonTextField, prefixSeparator, suffixSeparator);
         //System.out.println("Articles: " + String.join("|", articles));
         for (ObjectNode oneArticle : articles) {
-            //System.out.println("Article: " + oneArticle);
+            System.out.println("Article: " + oneArticle.get(jsonTextField).asText());
             ObjectNode result = index.findMatch(oneArticle);
             try 
             {
