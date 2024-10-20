@@ -19,7 +19,7 @@ public class ArticleLoader {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static String[] loadArticlesForSearching(String fileName, int csvColumnIndex, String jsonTextField, String prefixSeparator, String suffixSeparator) {
+    public static String[] loadArticlesForSearching(String fileName, int csvColumnIndex, String jsonTextField, String jsonIDField, String prefixSeparator, String suffixSeparator) {
         ArrayList<String> returnedArticles = new ArrayList<String>();
 
         if (fileName.toLowerCase().endsWith(".csv")) {
@@ -29,7 +29,7 @@ public class ArticleLoader {
             returnedArticles = loadArticlesFromText( fileName,  prefixSeparator,  suffixSeparator, returnedArticles);
         }
         else if (fileName.toLowerCase().endsWith(".json.gz")) {
-            returnedArticles = loadArticlesFromGZippedJSON(fileName, jsonTextField, returnedArticles);
+            returnedArticles = loadArticlesFromGZippedJSON(fileName, jsonTextField, jsonIDField, returnedArticles);
         }
 
         return returnedArticles.toArray(new String[returnedArticles.size()]);
@@ -53,7 +53,7 @@ public class ArticleLoader {
         return returnedArticles;
     } 
 
-    private static ArrayList<String> loadArticlesFromGZippedJSON(String fileName, String jsonTextField, ArrayList<String> returnedArticles) {
+    private static ArrayList<String> loadArticlesFromGZippedJSON(String fileName, String jsonTextField, String jsonIDField, ArrayList<String> returnedArticles) {
 
         try {
             GZIPInputStream gzipInputStream = new GZIPInputStream(Files.newInputStream(Paths.get(fileName)));
@@ -62,8 +62,12 @@ public class ArticleLoader {
             String readString;
             while ((readString = in.readLine()) != null){
                 JsonNode jsonNode = objectMapper.readTree(readString);
-                String savedText = jsonNode.get(jsonTextField).asText() + "#" + jsonNode.get("url").asText();
-                returnedArticles.add(savedText);
+                if (jsonNode.has(jsonTextField) && jsonNode.has(jsonIDField))
+                {
+                    String savedText = jsonNode.get(jsonTextField).asText();
+                    String textIdentifier = jsonNode.get(jsonIDField).asText();
+                    returnedArticles.add(savedText);    
+                }
             }
         } catch (IOException e) {
             System.err.println("Error processing file " + fileName + ": " + e.getMessage());

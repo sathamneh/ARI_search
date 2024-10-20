@@ -29,19 +29,23 @@ public class Searcher {
     private double startTime = System.nanoTime() / 1_000_000_000.0;
     private int columnIndex = 6;
     private String jsonTextField;
+    private String jsonIDField;
     private String prefixSeparator;
     private String suffixSeparator;
     private int scoreThreshold;
+    private int bufferSize;
 
-    public Searcher(ArticleIndex index, int threadsToUse, String watchDirectory, int columnIndex, String jsonTextField, String prefixSeparator, String suffixSeparator, int scoreThreshold) {
+    public Searcher(ArticleIndex index, int threadsToUse, String watchDirectory, int columnIndex, String jsonTextField, String jsonIDField, String prefixSeparator, String suffixSeparator, int scoreThreshold, int bufferSize) {
         this.index = index;
         this.threads = threadsToUse;
         this.watchDirectory = watchDirectory;
         this.columnIndex = columnIndex;
         this.jsonTextField = jsonTextField;
+        this.jsonIDField = jsonIDField;
         this.prefixSeparator = prefixSeparator;
         this.suffixSeparator = suffixSeparator;
         this.scoreThreshold = scoreThreshold;
+        this.bufferSize = bufferSize;
 
         updateCheckedFilesList();
     }
@@ -67,7 +71,7 @@ public class Searcher {
         {
             if (writer == null)
             {
-                writer = new BufferedWriter(new FileWriter("results_output.csv"));
+                writer = new BufferedWriter(new FileWriter("results_output.csv"), bufferSize);
             }
         } 
         catch (IOException ex) {
@@ -140,7 +144,7 @@ public class Searcher {
         String fileToSearch = getNextFile().get();
         checkedFiles.put(fileToSearch, new AtomicInteger(1));
    
-        String[] articles = ArticleLoader.loadArticlesForSearching(fileToSearch, columnIndex, jsonTextField, prefixSeparator, suffixSeparator);
+        String[] articles = ArticleLoader.loadArticlesForSearching(fileToSearch, columnIndex, jsonTextField, jsonIDField, prefixSeparator, suffixSeparator);
    
         for (String oneArticle : articles) {
             String[] result = index.findMatch(oneArticle);

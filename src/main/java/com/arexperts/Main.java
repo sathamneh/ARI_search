@@ -16,6 +16,7 @@ public class Main {
             String directoryPath = null;
             String watchDirectory = null;
             String jsonTextField = null;
+            String jsonIDField = null;
             String prefixSeparator = null;
             String suffixSeparator = null;
 
@@ -26,6 +27,7 @@ public class Main {
             int nGramLength = 5;
             int maximumNumberOfNGrams = 100000;
             int scoreThreshold = 0; // Output all scores by default.
+            int bufferSize = 1_000_000_000;
 
             String line;
             String nextLine = null;
@@ -40,6 +42,9 @@ public class Main {
                 } 
                 else if (line.startsWith("JSONtextfield:")) {
                     jsonTextField = line.substring(13).trim().replaceAll("\"", "").replaceAll(":", "");
+                }
+                else if (line.startsWith("JSONIDfield:")) {
+                    jsonIDField = line.substring(11).trim().replaceAll("\"", "").replaceAll(":", "");
                 }
                 else if (line.startsWith("Prefixseparator:")) {
                     prefixSeparator = line.substring(15).trim().replaceAll("\"", "").replaceAll(":", "");
@@ -103,6 +108,14 @@ public class Main {
                         System.err.println("Invalid number format for maximum_number_of_ngrams");
                     }
                 }
+                else if (line.startsWith("Buffersize:")) {
+                    try {
+                        bufferSize = Integer.parseInt(line.substring(10).trim().replaceAll(":", ""));
+                    }
+                    catch (NumberFormatException e) {
+                        System.err.println("Invalid number format for Buffersize");
+                    }
+                }
             }
             System.out.println("Process started with the following parameters:");
             System.out.println("Ingestion directory              : " + directoryPath);
@@ -113,9 +126,11 @@ public class Main {
             System.out.println("Score threshold                  : " + scoreThreshold);            
             System.out.println("Folder to scan                   : " + watchDirectory);
             System.out.println("CSV column to search             : " + columnIndexByte);
-            System.out.println("JSON field to use                : " + jsonTextField);
+            System.out.println("JSON text field to use           : " + jsonTextField);
+            System.out.println("JSON ID field to use             : " + jsonIDField);
             System.out.println("TXT prefix                       : " + prefixSeparator);
             System.out.println("TXT suffix                       : " + suffixSeparator);
+            System.out.println("Buffer size                      : " + bufferSize);
             
 
             ArticleIndex articles = CSVReader.loadNGramsFromCSVFiles(directoryPath, columnIndexByte, filesToProcess, offsetFileNumber, nGramLength, maximumNumberOfNGrams);
@@ -124,7 +139,7 @@ public class Main {
             System.out.println("Using " + articles.NumberOfArticles() + " articles for match.");
 
             double startOfSearch = System.nanoTime() / 1_000_000_000.0;
-            Searcher searcher = new Searcher(articles, threadCount, watchDirectory, columnIndexByte, jsonTextField, prefixSeparator, suffixSeparator, scoreThreshold);
+            Searcher searcher = new Searcher(articles, threadCount, watchDirectory, columnIndexByte, jsonTextField, jsonIDField, prefixSeparator, suffixSeparator, scoreThreshold, bufferSize);
             searcher.search();
             System.out.println("Time taken for threaded search is " + (System.nanoTime() / 1_000_000_000.0 - startOfSearch) + "s for " + searcher.checkedArticles() + " articles.");
 
