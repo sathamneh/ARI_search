@@ -5,27 +5,29 @@ package com.arexperts;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
 
 public class Main {
+
+    public final static long startTime = System.nanoTime();
     public static void main(String[] args) {
-        long startTime = System.nanoTime();
+        
         try (BufferedReader br = new BufferedReader(new FileReader("input.txt"))) {
             // Initialize variables
             String directoryPath = null;
-            String columnNameUrl = null;
-            int columnIndexUrl = 0;
-            String comparisonValueUrl = null;
-            String columnNameByte = null;
-            int columnIndexByte = 0;
-            String str1 = null;
-            int outputColumn = 0;
-            int threadCount = 1;
+            String watchDirectory = null;
+            String jsonTextField = null;
+            String jsonIDField = null;
+            String prefixSeparator = null;
+            String suffixSeparator = null;
 
-            // Define parameter prefixes
-            Set<String> parameterPrefixes = new HashSet<>(Arrays.asList("Folderpath:", "InputColumnname1:",
-                    "InputColumnindex1:", "Comparisonvalue1:", "InputColumnName2:", "InputColumnIndex2:",
-                    "Comparisonvalue2:", "OutputColumnIndex:", "threadcount:"));
+            int columnIndexByte = 0;
+            int threadCount = 1;
+            int filesToProcess = 1154;
+            int offsetFileNumber = 0;
+            int nGramLength = 5;
+            int maximumNumberOfNGrams = 100000;
+            int scoreThreshold = 0; // Output all scores by default.
+            int bufferSize = 1_000_000_000;
 
             String line;
             String nextLine = null;
@@ -34,23 +36,21 @@ public class Main {
                 line = line.trim();
                 if (line.startsWith("Folderpath:")) {
                     directoryPath = line.substring(11).trim().replaceAll("\"", "").replaceAll(":", "");
+                } 
+                else if (line.startsWith("Watchdirectory:")) {
+                    watchDirectory = line.substring(14).trim().replaceAll("\"", "").replaceAll(":", "");
+                } 
+                else if (line.startsWith("JSONtextfield:")) {
+                    jsonTextField = line.substring(13).trim().replaceAll("\"", "").replaceAll(":", "");
                 }
-                else if (line.startsWith("InputColumnname1:")) {
-                    columnNameUrl = line.substring(17).trim().replaceAll("\"", "").replaceAll(":", "");
+                else if (line.startsWith("JSONIDfield:")) {
+                    jsonIDField = line.substring(11).trim().replaceAll("\"", "").replaceAll(":", "");
                 }
-                else if (line.startsWith("InputColumnindex1:")) {
-                    try {
-                        columnIndexUrl = Integer.parseInt(line.substring(17).trim().replaceAll(":", ""));
-                    }
-                    catch (NumberFormatException e) {
-                        System.err.println("Invalid number format for InputColumnindex1");
-                    }
+                else if (line.startsWith("Prefixseparator:")) {
+                    prefixSeparator = line.substring(15).trim().replaceAll("\"", "").replaceAll(":", "");
                 }
-                else if (line.startsWith("Comparisonvalue1:")) {
-                    comparisonValueUrl = line.substring(16).trim().replaceAll("\"", "").replaceAll(":", "");
-                }
-                else if (line.startsWith("InputColumnName2:")) {
-                    columnNameByte = line.substring(17).trim().replaceAll("\"", "").replaceAll(":", "");
+                else if (line.startsWith("Suffixseparator:")) {
+                    suffixSeparator = line.substring(15).trim().replaceAll("\"", "").replaceAll(":", "");
                 }
                 else if (line.startsWith("InputColumnIndex2:")) {
                     try {
@@ -58,33 +58,6 @@ public class Main {
                     }
                     catch (NumberFormatException e) {
                         System.err.println("Invalid number format for InputColumnIndex2");
-                    }
-                }
-                else if (line.startsWith("Comparisonvalue2:")) {
-                    StringBuilder sb = new StringBuilder();
-                    String value = line.substring(16).trim().replaceAll("\"", "").replaceAll(":", "");
-                    sb.append(value);
-                    while ((nextLine = br.readLine()) != null) {
-                        nextLine = nextLine.trim();
-                        if (isParameterLine(nextLine, parameterPrefixes)) {
-                            // It's a new parameter, process it in the next iteration
-                            break;
-                        }
-                        else {
-                            sb.append(System.lineSeparator());
-                            sb.append(nextLine);
-                            nextLine = null; // Continue reading lines
-                        }
-                    }
-                    str1 = sb.toString();
-                    // If nextLine is a parameter line, it will be processed in the next iteration
-                }
-                else if (line.startsWith("OutputColumnIndex:")) {
-                    try {
-                        outputColumn = Integer.parseInt(line.substring(17).trim().replaceAll(":", ""));
-                    }
-                    catch (NumberFormatException e) {
-                        System.err.println("Invalid number format for OutputColumnIndex");
                     }
                 }
                 else if (line.startsWith("threadcount:")) {
@@ -95,29 +68,91 @@ public class Main {
                         System.err.println("Invalid number format for threadcount");
                     }
                 }
+                else if (line.startsWith("files_to_process:")) {
+                    try {
+                        filesToProcess = Integer.parseInt(line.substring(16).trim().replaceAll(":", ""));
+                    }
+                    catch (NumberFormatException e) {
+                        System.err.println("Invalid number format for files_to_process");
+                    }
+                }
+                else if (line.startsWith("offset_file_number:")) {
+                    try {
+                        offsetFileNumber = Integer.parseInt(line.substring(18).trim().replaceAll(":", ""));
+                    }
+                    catch (NumberFormatException e) {
+                        System.err.println("Invalid number format for offset_file_number");
+                    }
+                }
+                else if (line.startsWith("ngram_length:")) {
+                    try {
+                        nGramLength = Integer.parseInt(line.substring(12).trim().replaceAll(":", ""));
+                    }
+                    catch (NumberFormatException e) {
+                        System.err.println("Invalid number format for ngram_length");
+                    }
+                }
+                else if (line.startsWith("maximum_number_of_ngrams:")) {
+                    try {
+                        maximumNumberOfNGrams = Integer.parseInt(line.substring(24).trim().replaceAll(":", ""));
+                    }
+                    catch (NumberFormatException e) {
+                        System.err.println("Invalid number format for maximum_number_of_ngrams");
+                    }
+                }
+                else if (line.startsWith("score_threshold:")) {
+                    try {
+                        scoreThreshold = Integer.parseInt(line.substring(15).trim().replaceAll(":", ""));
+                    }
+                    catch (NumberFormatException e) {
+                        System.err.println("Invalid number format for maximum_number_of_ngrams");
+                    }
+                }
+                else if (line.startsWith("Buffersize:")) {
+                    try {
+                        bufferSize = Integer.parseInt(line.substring(10).trim().replaceAll(":", ""));
+                    }
+                    catch (NumberFormatException e) {
+                        System.err.println("Invalid number format for Buffersize");
+                    }
+                }
             }
             System.out.println("Process started with the following parameters:");
-            System.out.println("Directory path: " + directoryPath);
-            System.out.println("Thread count: " + threadCount);
-            CSVReader.processFiles(directoryPath, columnNameUrl, columnIndexUrl, comparisonValueUrl, columnNameByte,
-                    columnIndexByte, str1, outputColumn, threadCount);
+            System.out.println("Ingestion directory              : " + directoryPath);
+            System.out.println("# files to ingest                : " + filesToProcess);
+            System.out.println("# files to skip before ingestion : " + offsetFileNumber);
+            System.out.println("nGram length                     : " + nGramLength);
+            System.out.println("Max # ngrams                     : " + maximumNumberOfNGrams);
+            System.out.println("Score threshold                  : " + scoreThreshold);            
+            System.out.println("Folder to scan                   : " + watchDirectory);
+            System.out.println("CSV column to search             : " + columnIndexByte);
+            System.out.println("JSON text field to use           : " + jsonTextField);
+            System.out.println("JSON ID field to use             : " + jsonIDField);
+            System.out.println("TXT prefix                       : " + prefixSeparator);
+            System.out.println("TXT suffix                       : " + suffixSeparator);
+            System.out.println("Buffer size                      : " + bufferSize);
+            
+
+            ArticleIndex articles = CSVReader.loadNGramsFromCSVFiles(directoryPath, columnIndexByte, filesToProcess, offsetFileNumber, nGramLength, maximumNumberOfNGrams);
+            System.out.println("Time to load data from files : " + getElapsedTime() + "s");
+
+            System.out.println("Using " + articles.NumberOfArticles() + " articles for match.");
+
+            double startOfSearch = System.nanoTime() / 1_000_000_000.0;
+            Searcher searcher = new Searcher(articles, threadCount, watchDirectory, columnIndexByte, jsonTextField, jsonIDField, prefixSeparator, suffixSeparator, scoreThreshold, bufferSize);
+            searcher.search();
+            System.out.println("Time taken for threaded search is " + (System.nanoTime() / 1_000_000_000.0 - startOfSearch) + "s for " + searcher.checkedArticles() + " articles.");
+
         }
         catch (IOException e) {
             System.err.println("Error reading input file: " + e.getMessage());
         }
 
-        long endTime = System.nanoTime();
-        double executionTime = (endTime - startTime) / 1_000_000_000.0; // Converts to seconds
-        System.out.println("Execution time: " + executionTime + "s");
+        System.out.println("Total execution time: " + getElapsedTime() + "s");
     }
 
-    // Helper method to check if a line is a parameter line
-    private static boolean isParameterLine(String line, Set<String> parameterPrefixes) {
-        for (String prefix : parameterPrefixes) {
-            if (line.startsWith(prefix)) {
-                return true;
-            }
-        }
-        return false;
+    private static double getElapsedTime()
+    {        
+        return (System.nanoTime() - startTime) / 1_000_000_000.0; // Converts to seconds
     }
 }

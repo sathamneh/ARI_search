@@ -1,0 +1,50 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "TestLimitingNGramNumber",
+            "request": "launch",
+            "mainClass": "com.arexperts.TestLimitingNGramNumber",
+            "projectName": "ARI_search"
+        },
+        {
+            "type": "java",
+            "name": "TestReadSpeed",
+            "request": "launch",
+            "mainClass": "com.arexperts.TestReadSpeed",
+            "projectName": "ARI_search"
+        },
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "com.arexperts.Main",
+            "projectName": "ARI_search",
+            "vmArgs": "-Xmx20g"
+        },
+        {
+            "type": "java",
+            "name": "TestNGramsOnly",
+            "request": "launch",
+            "mainClass": "com.arexperts.TestNGramsOnly",
+            "projectName": "ARI_search"
+        },
+        {
+            "type": "java",
+            "name": "TestResults",
+            "request": "launch",
+            "mainClass": "com.arexperts.TestResults",
+            "projectName": "ARI_search"
+        }
+    ]
+}

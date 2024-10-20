@@ -4,172 +4,86 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.FileWriter;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 public class CSVReader {
 
-    public static boolean hasColumn(String filePath, String columnName, int columnIndex) {
-        try (Reader reader = new FileReader(filePath);
+    public static ArticleIndex loadNGramsFromCSVFiles(String directoryPath,  int columnIndex, int filesToProcess, int offsetFileNumber, int nGramLength, int maximumNumberOfNGrams) {
+        int fileCount = 0;
+        int filesProcessed = 0;
+        File[] files = getFileList(directoryPath);
+        ArticleIndex article = new ArticleIndex(nGramLength, maximumNumberOfNGrams);
+        double startTime = System.nanoTime()/1_000_000_000.0;
+
+        for (File file : files) {
+            fileCount++;
+            double loopStartTime = System.nanoTime()/1_000_000_000.0;
+            if (file.getName().toLowerCase().startsWith("._")) {
+                System.out.println("Skipping ._ file:" + file.getName());        
+                continue;
+            }
+            if (fileCount <= offsetFileNumber) {
+                System.out.println("Skipping offset file:" + file.getName() );        
+                continue;
+            }
+            if (filesProcessed >= filesToProcess)
+            {
+                System.out.println("All processed files done! " + (System.nanoTime()/1_000_000_000.0 - startTime));        
+                break;
+            }
+            if (file.getName().toLowerCase().endsWith(".csv")) {
+                try (Reader reader = new FileReader(file.getAbsolutePath());
                 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build())) {
-            return csvParser.getHeaderMap().containsKey(columnName);
+
+                    for (CSVRecord record : csvParser) {
+                        if (record.size() <= columnIndex) {
+                            continue;
+                        }        
+                        String articleToAdd = record.get(columnIndex).trim();        
+                        article.addArticle(articleToAdd, file.getName().toLowerCase());
+                    } 
+                }
+                catch(IOException ex) {
+                    System.err.println("File '" + file.getName() +  "' caught exception: " + ex.getLocalizedMessage());
+                }
+                catch(OutOfMemoryError exMemoryError)
+                {
+                    System.err.println("File '" + file.getName() +  "' caught exception: " + exMemoryError.getLocalizedMessage() + " after " + fileCount + " files.");
+                }
+                filesProcessed++;
+            } else {
+                System.out.println("Skipping : " + file.getName() + " " + (System.nanoTime()/1_000_000_000.0 - startTime));        
+            }
+            
+            System.out.println("File #" + filesProcessed + ". Processed " + file.getName() + " in " +   (System.nanoTime()/1_000_000_000.0 - loopStartTime));        
         }
-        catch (IOException e) {
-            System.out.println("Error reading CSV file: " + e.getMessage());
-            return false;
-        }
+
+        System.out.println("End:" + (System.nanoTime()/1_000_000_000.0 - startTime));        
+
+        return article;
     }
 
-    public static void comparengram(String filePath, String columnName, int columnIndex, String comparisonValue,
-            BufferedWriter bw, int columnurl, int outputcolumnindex, String urlvalue, AtomicInteger totalRecords)
-            throws IOException {
-        try (Reader reader = new FileReader(filePath);
-                CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build())) {
-
-            String fileName = new File(filePath).getName();
-            synchronized (bw) {
-                bw.write(fileName + "\n");
-                bw.flush();
-            }
-
-            ArticleIndex article = new ArticleIndex(10);
-            for (CSVRecord record : csvParser) {
-                totalRecords.incrementAndGet();
-                if (record.size() <= columnIndex) {
-                    continue;
-                }
-
-                String column = record.get(columnIndex).trim();
-                String result = article.validateMatch(comparisonValue, column);
-                synchronized (bw) {
-                    if (urlvalue.contains("None")) {
-                        if (result.contains("true")) {
-                            if (outputcolumnindex != 0) {
-                                bw.write(fileName + "," + record.get(outputcolumnindex).trim() + "," + result + "\n");
-                            }
-                            else {
-                                bw.write(fileName + ",0," + result + "\n");
-                            }
-                            bw.flush();
-                        }
-                    }
-                    else {
-                        if (record.get(columnurl).trim().contains(urlvalue) && result.contains("true")) {
-                            if (outputcolumnindex != 0) {
-                                bw.write(fileName + "," + record.get(outputcolumnindex).trim() + "," + result + "\n");
-                            }
-                            else {
-                                bw.write(fileName + ",0," + result + "\n");
-                            }
-                            bw.flush();
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    public static void processFiles(String directoryPath, String columnName, int columnIndex, String comparisonValue,
-            String column, int index, String value, int op, int threadCount) {
+    public static File[] getFileList(String directoryPath)
+    {
         File directory = new File(directoryPath);
         if (!directory.exists()){
-            System.out.println("Given path '" + directoryPath + "' does not exist.");
-            return;
+            System.err.println("Given path '" + directoryPath + "' does not exist.");
+            return null;
         }
         if (!directory.isDirectory()) {
-            System.out.println("Given path '" + directoryPath + "' is not a directory.");
-            return;
+            System.err.println("Given path '" + directoryPath + "' is not a directory.");
+            return null;
         }
         File[] files = directory.listFiles();
         if (files == null) {
-            System.out.println("No files found in directory");
-            return;
+            System.err.println("No files found in directory");
+            return null;
         }
 
-        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
-        BufferedWriter bw = null;
-        AtomicInteger processedFileCount = new AtomicInteger(0);
-        AtomicInteger errorFileCount = new AtomicInteger(0);
-        AtomicInteger totalRecords = new AtomicInteger(0);
-
-        long startTime = System.currentTimeMillis();
-
-        try {
-            bw = new BufferedWriter(new FileWriter("result/intersection.csv"));
-            bw.write("Directory " + directoryPath + "\n" + "InputColumn1 " + columnName + "\n" + "InputColumn1Index "
-                    + columnIndex + "\n" + "Comparisonvalue1 " + comparisonValue + "\n" + "InputColumn2 " + column
-                    + "\n" + "InputColumn2Index " + index + "\n" + "Comparisonvalue2 " + value + "\n"
-                    + "`OutputColumnIndex " + op + "\n");
-            bw.write("Index,Result\n"); // write header
-            bw.flush();
-
-            for (File file : files) {
-                if (file.getName().toLowerCase().endsWith(".csv") && !file.getName().toLowerCase().startsWith("._")) {
-                    final BufferedWriter finalBw = bw;
-                    executor.submit(() -> {
-                        if (hasColumn(file.getAbsolutePath(), columnName, columnIndex)) {
-                            try {
-                                comparengram(file.getAbsolutePath(), column, index, value, finalBw, columnIndex, op,
-                                        comparisonValue, totalRecords);
-                                processedFileCount.incrementAndGet();
-                            }
-                            catch (IOException e) {
-                                System.out.println("Error processing file: " + file.getName() + " - " + e.getMessage());
-                                errorFileCount.incrementAndGet();
-                            }
-                        }
-                        else {
-                            System.out.println("Column " + columnName + " not found in file: " + file.getName());
-                            errorFileCount.incrementAndGet();
-                        }
-                    });
-                }
-            }
-        }
-        catch (IOException e) {
-            System.out.println("Error reading or writing CSV file: " + e.getMessage());
-        }
-        finally {
-            executor.shutdown();
-            try {
-                // Wait for all tasks to finish
-                executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-            }
-            catch (InterruptedException e) {
-                executor.shutdownNow();
-                Thread.currentThread().interrupt();
-            }
-            finally {
-                if (bw != null) {
-                    try {
-                        bw.close();
-                    }
-                    catch (IOException e) {
-                        System.out.println("Error closing BufferedWriter: " + e.getMessage());
-                    }
-                }
-                long endTime = System.currentTimeMillis();
-                long duration = endTime - startTime;
-                double seconds = duration / 1000.0;
-                double recordsPerSecond = totalRecords.get() / seconds;
-                double filesPerSecond = processedFileCount.get() / seconds;
-
-                System.out.println("Processed files: " + processedFileCount.get());
-                System.out.println("Errored files: " + errorFileCount.get());
-                System.out.println("Total records: " + totalRecords.get());
-                System.out.println("Total time (seconds): " + seconds);
-                System.out.println("Records processed per second: " + recordsPerSecond);
-                System.out.println("Files processed per second: " + filesPerSecond);
-            }
-        }
+        return files;
     }
-
 }

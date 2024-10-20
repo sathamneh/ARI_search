@@ -11,27 +11,24 @@ public class TestResults
     
     public static void main(String[] args) 
     {
-        for (int i = 0; i<100; i++)
-        {
-            ArticleIndex test_index = new ArticleIndex(10);
-            test_index.addArticle(s1,"s1");
-            test_index.addArticle(s3,"s3");
-                
-            // S1 and S2 should match
-            String[] match = test_index.findMatch(s2);
-            for (String one_match : match) {
-                System.out.println("s2 matches with " + one_match );            
-            }
-            String is_match = test_index.validateMatch(s2,s1);
-            System.out.println("Is this a good match: " + is_match);
-    
-            // S3 and S4 should not match
-            match = test_index.findMatch(s4);
-            for (String one_match : match) {
-                System.out.println("s4 matches with " + one_match );            
-            }
-            is_match = test_index.validateMatch(s3,s4);
-            System.out.println("Is this a good match: " + is_match);    
+        ArticleIndex test_index = new ArticleIndex(5,100);
+        test_index.addArticle(s1,"s1");
+        test_index.addArticle(s3,"s3");
+            
+        // S1 and S2 should match
+        String[] match = test_index.findMatch(s2);
+        for (String one_match : match) {
+            System.out.println("s2 matches with " + one_match );            
         }
+        String is_match = test_index.validateMatch(s2,s1);
+            System.out.println("Is this a good match: " + is_match);
+
+        // S3 and S4 should not match
+        match = test_index.findMatch(s4);
+        for (String one_match : match) {
+            System.out.println("s4 matches with " + one_match );            
+        }
+        is_match = test_index.validateMatch(s3,s4);
+        System.out.println("Is this a good match: " + is_match);            
     }
 }
