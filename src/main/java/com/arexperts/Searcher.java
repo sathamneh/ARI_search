@@ -144,10 +144,11 @@ public class Searcher {
    
         for (String oneArticle : articles) {
             String[] result = index.findMatch(oneArticle);
+            System.out.println("Searching " + fileToSearch + " for " + oneArticle);
             try 
             {
                 if (Double.parseDouble(result[1]) > scoreThreshold) {
-                    writer.write(fileToSearch + "," + result[0] + "," + result[1] + "\n");
+                    writer.write(fileToSearch + ",**" + oneArticle.split("#")[1] + "**" + result[0] + "," + result[1] + "\n");
                 }
                 articlesSearched.incrementAndGet();
             }

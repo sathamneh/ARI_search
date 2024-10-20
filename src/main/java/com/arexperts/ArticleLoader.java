@@ -54,9 +54,17 @@ public class ArticleLoader {
     } 
 
     private static ArrayList<String> loadArticlesFromGZippedJSON(String fileName, String jsonTextField, ArrayList<String> returnedArticles) {
-        try (GZIPInputStream gzipInputStream = new GZIPInputStream(Files.newInputStream(Paths.get(fileName)))) {
-            JsonNode jsonNode = objectMapper.readTree(gzipInputStream);
-            returnedArticles.add(jsonNode.get(jsonTextField).asText());
+
+        try {
+            GZIPInputStream gzipInputStream = new GZIPInputStream(Files.newInputStream(Paths.get(fileName)));
+            InputStreamReader reader = new InputStreamReader(gzipInputStream);
+            BufferedReader in = new BufferedReader(reader);
+            String readString;
+            while ((readString = in.readLine()) != null){
+                JsonNode jsonNode = objectMapper.readTree(readString);
+                String savedText = jsonNode.get(jsonTextField).asText() + "#" + jsonNode.get("url").asText();
+                returnedArticles.add(savedText);
+            }
         } catch (IOException e) {
             System.err.println("Error processing file " + fileName + ": " + e.getMessage());
         }

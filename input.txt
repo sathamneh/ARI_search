@@ -1,4 +1,4 @@
-Folderpath:test_data
+Folderpath:/mnt/d/projects/ARI/OpenAI-NYT/demo
 Watchdirectory:test_data
 InputColumnname1:url
 InputColumnindex1:2
