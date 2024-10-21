@@ -3,6 +3,10 @@ package com.arexperts;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,7 +21,8 @@ import java.util.concurrent.TimeUnit;
 
 public class Searcher {
 
-    public static int TIMEOUT_PERIOD_IN_SECONDS = 120; // Make this lower if you want to benchmark search speed.
+    public static final int TIMEOUT_PERIOD_IN_SECONDS = 120; // Make this lower if you want to benchmark search speed.
+    public static final String CHECKED_FILES_STORAGE = "checked_files.ser";
     private ArticleIndex index;
     private int threads;
     private ConcurrentHashMap<String, AtomicInteger> checkedFiles = new ConcurrentHashMap<>();
@@ -47,9 +52,60 @@ public class Searcher {
         this.scoreThreshold = scoreThreshold;
         this.bufferSize = bufferSize;
 
+        loadCheckedFiles();
+
         updateCheckedFilesList();
     }
 
+    private void writeObject(Object object, String name)
+    {
+        try {
+            FileOutputStream fos = new FileOutputStream(name);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(object);
+            oos.close();
+        }
+        catch (Exception ex) {
+            System.err.println("Unable to serialize " + name + ": " + ex.getLocalizedMessage());
+        }
+    }
+
+    public static boolean isSaved()
+    {
+        File f = new File(CHECKED_FILES_STORAGE);
+        return f.exists() && !f.isDirectory(); 
+    }
+
+    public void storeCheckedFiles()
+    {
+        writeObject(checkedFiles, CHECKED_FILES_STORAGE);
+    }
+
+    private static Object readObject(String name)
+    {
+        Object theReadObject = null;
+        try {
+            FileInputStream fis = new FileInputStream(name);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            theReadObject =  ois.readObject();
+
+            ois.close();
+        }
+        catch (Exception ex) {
+            System.err.println("Unable to deserialize " + name + ": " + ex.getLocalizedMessage());
+        }
+
+        return theReadObject;
+    }    
+    @SuppressWarnings("unchecked")
+    public void loadCheckedFiles()
+    {
+        if (isSaved())
+        {
+            checkedFiles = (ConcurrentHashMap<String, AtomicInteger>) readObject(CHECKED_FILES_STORAGE);
+        }
+    }
+  
     private int updateCheckedFilesList() {
         int newFilesFound = 0;
         File[] files = CSVReader.getFileList(watchDirectory);
@@ -67,6 +123,7 @@ public class Searcher {
     }
 
     public void search() {
+        int numberOfFilesSearched = 0;
         try 
         {
             if (writer == null)
@@ -85,6 +142,10 @@ public class Searcher {
 
         while ((System.nanoTime() / 1_000_000_000.0 - lastTimeNewFileFoundInSeconds) < TIMEOUT_PERIOD_IN_SECONDS)
         {
+            numberOfFilesSearched++;
+            if (numberOfFilesSearched % 100 == 0) {
+                storeCheckedFiles();
+            }
             executor.submit(() -> 
             {
                 if (getNextFile().isPresent())
@@ -150,7 +211,6 @@ public class Searcher {
    
         for (Article oneArticle : articles) {
             String[] result = index.findMatch(oneArticle.articleText);
-            System.out.println("Searching " + fileToSearch + " for " + oneArticle);
             try 
             {
                 if (Double.parseDouble(result[1]) > scoreThreshold) {
