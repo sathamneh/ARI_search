@@ -18,3 +18,4 @@ ngram_length:5
 maximum_number_of_ngrams:50
 score_threshold:5
 Buffersize:1000000
+Filesperdump:100

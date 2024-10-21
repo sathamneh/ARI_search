@@ -23,6 +23,7 @@ public class Searcher {
 
     public static final int TIMEOUT_PERIOD_IN_SECONDS = 120; // Make this lower if you want to benchmark search speed.
     public static final String CHECKED_FILES_STORAGE = "checked_files.ser";
+
     private ArticleIndex index;
     private int threads;
     private ConcurrentHashMap<String, AtomicInteger> checkedFiles = new ConcurrentHashMap<>();
@@ -39,8 +40,9 @@ public class Searcher {
     private String suffixSeparator;
     private int scoreThreshold;
     private int bufferSize;
+    private int filesPerDump;
 
-    public Searcher(ArticleIndex index, int threadsToUse, String watchDirectory, int columnIndex, String jsonTextField, String jsonIDField, String prefixSeparator, String suffixSeparator, int scoreThreshold, int bufferSize) {
+    public Searcher(ArticleIndex index, int threadsToUse, String watchDirectory, int columnIndex, String jsonTextField, String jsonIDField, String prefixSeparator, String suffixSeparator, int scoreThreshold, int bufferSize, int filesPerDump) {
         this.index = index;
         this.threads = threadsToUse;
         this.watchDirectory = watchDirectory;
@@ -51,6 +53,7 @@ public class Searcher {
         this.suffixSeparator = suffixSeparator;
         this.scoreThreshold = scoreThreshold;
         this.bufferSize = bufferSize;
+        this.filesPerDump = filesPerDump;
 
         loadCheckedFiles();
 
@@ -143,7 +146,7 @@ public class Searcher {
         while ((System.nanoTime() / 1_000_000_000.0 - lastTimeNewFileFoundInSeconds) < TIMEOUT_PERIOD_IN_SECONDS)
         {
             numberOfFilesSearched++;
-            if (numberOfFilesSearched % 100 == 0) {
+            if (numberOfFilesSearched % filesPerDump == 0) {
                 storeCheckedFiles();
             }
             executor.submit(() -> 

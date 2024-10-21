@@ -28,6 +28,7 @@ public class Main {
             int maximumNumberOfNGrams = 100000;
             int scoreThreshold = 0; // Output all scores by default.
             int bufferSize = 1_000_000_000;
+            int filesPerDump = 100;
 
             String line;
             String nextLine = null;
@@ -116,6 +117,14 @@ public class Main {
                         System.err.println("Invalid number format for Buffersize");
                     }
                 }
+                else if (line.startsWith("Filesperdump:")) {
+                    try {
+                        filesPerDump = Integer.parseInt(line.substring(12).trim().replaceAll(":", ""));
+                    }
+                    catch (NumberFormatException e) {
+                        System.err.println("Invalid number format for Buffersize");
+                    }
+                }
             }
             System.out.println("Process started with the following parameters:");
             System.out.println("Ingestion directory              : " + directoryPath);
@@ -131,6 +140,7 @@ public class Main {
             System.out.println("TXT prefix                       : " + prefixSeparator);
             System.out.println("TXT suffix                       : " + suffixSeparator);
             System.out.println("Buffer size                      : " + bufferSize);
+            System.out.println("Files per state save             : " + filesPerDump);
             
 
             ArticleIndex articles = CSVReader.loadNGramsFromCSVFiles(directoryPath, columnIndexByte, filesToProcess, offsetFileNumber, nGramLength, maximumNumberOfNGrams);
@@ -139,7 +149,7 @@ public class Main {
             System.out.println("Using " + articles.NumberOfArticles() + " articles for match.");
 
             double startOfSearch = System.nanoTime() / 1_000_000_000.0;
-            Searcher searcher = new Searcher(articles, threadCount, watchDirectory, columnIndexByte, jsonTextField, jsonIDField, prefixSeparator, suffixSeparator, scoreThreshold, bufferSize);
+            Searcher searcher = new Searcher(articles, threadCount, watchDirectory, columnIndexByte, jsonTextField, jsonIDField, prefixSeparator, suffixSeparator, scoreThreshold, bufferSize, filesPerDump);
             searcher.search();
             System.out.println("Time taken for threaded search is " + (System.nanoTime() / 1_000_000_000.0 - startOfSearch) + "s for " + searcher.checkedArticles() + " articles.");
 
