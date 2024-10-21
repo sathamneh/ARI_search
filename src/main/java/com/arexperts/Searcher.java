@@ -72,6 +72,8 @@ public class Searcher {
             if (writer == null)
             {
                 writer = new BufferedWriter(new FileWriter("results_output.csv"), bufferSize);
+                writer.write("File Searched, Matching Article ID, File Matching, Matching Score" + "\n");
+                
             }
         } 
         catch (IOException ex) {
@@ -144,15 +146,15 @@ public class Searcher {
         String fileToSearch = getNextFile().get();
         checkedFiles.put(fileToSearch, new AtomicInteger(1));
    
-        String[] articles = ArticleLoader.loadArticlesForSearching(fileToSearch, columnIndex, jsonTextField, jsonIDField, prefixSeparator, suffixSeparator);
+        Article[] articles = ArticleLoader.loadArticlesForSearching(fileToSearch, columnIndex, jsonTextField, jsonIDField, prefixSeparator, suffixSeparator);
    
-        for (String oneArticle : articles) {
-            String[] result = index.findMatch(oneArticle);
+        for (Article oneArticle : articles) {
+            String[] result = index.findMatch(oneArticle.articleText);
             System.out.println("Searching " + fileToSearch + " for " + oneArticle);
             try 
             {
                 if (Double.parseDouble(result[1]) > scoreThreshold) {
-                    writer.write(fileToSearch + ",**" + oneArticle.split("#")[1] + "**" + result[0] + "," + result[1] + "\n");
+                    writer.write(fileToSearch + "," + oneArticle.articleID + "," + result[0] + "," + result[1] + "\n");
                 }
                 articlesSearched.incrementAndGet();
             }

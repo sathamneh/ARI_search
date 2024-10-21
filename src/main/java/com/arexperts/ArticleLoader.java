@@ -14,13 +14,12 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
-
 public class ArticleLoader {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static String[] loadArticlesForSearching(String fileName, int csvColumnIndex, String jsonTextField, String jsonIDField, String prefixSeparator, String suffixSeparator) {
-        ArrayList<String> returnedArticles = new ArrayList<String>();
+    public static Article[] loadArticlesForSearching(String fileName, int csvColumnIndex, String jsonTextField, String jsonIDField, String prefixSeparator, String suffixSeparator) {
+        ArrayList<Article> returnedArticles = new ArrayList<Article>();
 
         if (fileName.toLowerCase().endsWith(".csv")) {
             returnedArticles = loadArticlesFromCSV(fileName, csvColumnIndex, returnedArticles);
@@ -32,18 +31,19 @@ public class ArticleLoader {
             returnedArticles = loadArticlesFromGZippedJSON(fileName, jsonTextField, jsonIDField, returnedArticles);
         }
 
-        return returnedArticles.toArray(new String[returnedArticles.size()]);
+        return returnedArticles.toArray(new Article[returnedArticles.size()]);
     }
 
-    private static ArrayList<String> loadArticlesFromCSV(String fileName, int columnIndex, ArrayList<String> returnedArticles) {
+    private static ArrayList<Article> loadArticlesFromCSV(String fileName, int columnIndex, ArrayList<Article> returnedArticles) {
         try (Reader reader = new FileReader(fileName);
         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build())) {
 
             for (CSVRecord record : csvParser) {
                 if (record.size() <= columnIndex) {
                     continue;
-                }        
-                returnedArticles.add(record.get(columnIndex).trim());                            
+                }
+                
+                returnedArticles.add(Article.build(record.get(columnIndex).trim(), fileName));                            
             } 
         }
         catch(IOException ex) {
@@ -53,7 +53,7 @@ public class ArticleLoader {
         return returnedArticles;
     } 
 
-    private static ArrayList<String> loadArticlesFromGZippedJSON(String fileName, String jsonTextField, String jsonIDField, ArrayList<String> returnedArticles) {
+    private static ArrayList<Article> loadArticlesFromGZippedJSON(String fileName, String jsonTextField, String jsonIDField, ArrayList<Article> returnedArticles) {
 
         try {
             GZIPInputStream gzipInputStream = new GZIPInputStream(Files.newInputStream(Paths.get(fileName)));
@@ -64,9 +64,8 @@ public class ArticleLoader {
                 JsonNode jsonNode = objectMapper.readTree(readString);
                 if (jsonNode.has(jsonTextField) && jsonNode.has(jsonIDField))
                 {
-                    String savedText = jsonNode.get(jsonTextField).asText();
-                    String textIdentifier = jsonNode.get(jsonIDField).asText();
-                    returnedArticles.add(savedText);    
+                    Article article = Article.build(jsonNode.get(jsonTextField).asText(), jsonNode.get(jsonIDField).asText());
+                    returnedArticles.add(article);    
                 }
             }
         } catch (IOException e) {
@@ -76,7 +75,7 @@ public class ArticleLoader {
         return returnedArticles;
     }
 
-    private static ArrayList<String> loadArticlesFromText(String fileName, String prefixSeparator, String suffixSeparator, ArrayList<String> returnedArticles) {
+    private static ArrayList<Article> loadArticlesFromText(String fileName, String prefixSeparator, String suffixSeparator, ArrayList<Article> returnedArticles) {
         try (BufferedReader reader = new BufferedReader(new FileReader(new File(fileName)))) {
             StringBuilder contentBuilder = new StringBuilder();
             String line;
@@ -98,7 +97,7 @@ public class ArticleLoader {
                 }
             }
 
-            returnedArticles.add(cleanUpText(contentBuilder.toString()));
+            returnedArticles.add(Article.build(cleanUpText(contentBuilder.toString()), fileName));
 
         } catch (IOException e) {
             System.err.println("Error processing file " + fileName + ": " + e.getMessage());
